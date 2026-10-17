@@ -1,24 +1,29 @@
 # Sukoon — Mera-Sukoon24
 
-A warm, culturally aware AI companion for clarity, comfort, and practical next steps through difficult moments.
+A free, culturally aware self-help app for small practical steps, with a specification for a future AI companion.
 
 ## Project status
 
-Version 0.3.0 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app, live hosting or clinical validation is included.
+Version 0.4.0 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app, live hosting or clinical validation is included.
 
 ## Free wellbeing tools
 
 - 15 curated entries from WHO, NHS, CCI, Mind and YoungMinds: books, workbooks, worksheets, guidance and available audio.
-- Urdu edition signpost for WHO's stress guide; the interface itself is currently English.
+- Urdu edition signpost for WHO's stress guide; next-step planner in English, Urdu script and Roman Urdu. Other tools remain English.
 - Search and topic/language filters, bookmarks and source attribution.
 - Body-shaming/racism reflection with affected-person, witness and own-behaviour perspectives; setting-specific guidance, safe boundary/apology scripts, safeguarding and up to four next steps. Reports use transparent rules, not AI or expert individual evaluation.
 - Optional check-in routes selected concerns to reading. It is not a validated screening instrument.
+- Three clear starting routes, compact expandable behavioural reports, uncertainty and power-imbalance inputs, and improved result focus.
 - Comfortable breathing timer, sensory grounding and small daily activities.
-- Optional mood/reflection history (latest 90 entries; last seven shown), JSON export and deletion.
+- Optional mood/reflection history (latest 90 entries, paginated display), hidden-by-default reflection text, individual deletion, validated JSON restore and export.
 - Session-only data by default; saving to this browser requires explicit opt-in.
 - Offline app shell after a successful online visit and service-worker installation. External books and publisher pages are not cached.
 
 No runtime dependencies, subscriptions, keys, advertisements or paid APIs. No claim that the app measures or increases dopamine. The catalogue contains official free-access resources, not pirated commercial books and not every book available online.
+
+## Audit and release status
+
+See [architecture and behavioural design audit](docs/AUDIT.md) for findings, evidence, ratings and remaining gaps. Version 0.4.0 passes 34 automated tests, including simulated DOM event tests. These are not real-browser, device, accessibility or clinical certification.
 
 ## Run and check
 
@@ -78,7 +83,7 @@ See [free resource policy and sources](docs/FREE_RESOURCES.md) and [verification
 
 Read the original prompt together with the runtime guidance. For a future AI integration, apply the runtime guidance as governing constraints before the companion brief; do not ship the original prompt on its own as a clinical service.
 
-The original brief includes user-supplied helpline numbers. These are archived reference text, **not a verified resource directory**. Verify current location, service scope, and availability before displaying any crisis contact.
+The current prompt requires verified, location-aware crisis resources instead of hardcoded contact numbers. No resource lookup or emergency-dispatch integration exists in the browser tools.
 
 No personal conversation history, credentials, or private case details are included.
 

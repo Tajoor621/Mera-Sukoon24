@@ -1,0 +1,35 @@
+// Simulated DOM event tests. These exercise application code, not browser layout.
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {STORAGE_KEY} from '../core.mjs';
+let generation=0;
+async function boot(seed=null,{denyRemove=false}={}){
+ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),ids=new Map(),events=new Map(),store=new Map(seed===null?[]:[[STORAGE_KEY,seed]]);let focused='';
+ class Element{
+  constructor(tag='div'){this.tagName=tag;this.children=[];this.dataset={};this.attributes={};this.checked=false;this.disabled=false;this.hidden=false;this.value='';this.files=[];this._text='';const set=new Set();this.classList={add:x=>set.add(x),remove:x=>set.delete(x)};}
+  append(...nodes){this.children.push(...nodes);if(this.tagName==='select'&&!this.hasInitialOption&&nodes[0]){this.value=nodes[0].value;this.hasInitialOption=true;}}
+  replaceChildren(...nodes){this.children=[];if(this.tagName==='select'){this.value='';this.hasInitialOption=false;}this.append(...nodes);}
+  set textContent(t){this._text=t;this.children=[];}get textContent(){return this._text+this.children.map(n=>n.textContent??'').join(' ');}
+  setAttribute(k,v){this.attributes[k]=v;}addEventListener(k,fn){this[k]=fn;}focus(){focused=this.id;}
+  setCustomValidity(v){this.validityMessage=v;}reportValidity(){}click(){this.onclick?.({preventDefault(){}});}remove(){}
+  reset(){for(const n of this.fields??[]){n.value=n.defaultValue??'';n.checked=false;}this.onreset?.();}
+ }
+ for(const m of html.matchAll(/<([a-z]+)\b[^>]*\bid="([^"]+)"[^>]*>/g)){const n=new Element(m[1]);n.id=m[2];n.hidden=m[0].includes(' hidden');ids.set(n.id,n);}
+ for(const m of html.matchAll(/<select\b[^>]*\bid="([^"]+)"[^>]*>([\s\S]*?)<\/select>/g)){const option=m[2].match(/<option(?: value="([^"]*)")?[^>]*>([^<]*)/);if(option){ids.get(m[1]).value=option[1]??option[2];ids.get(m[1]).hasInitialOption=true;}}
+ for(const n of ids.values())n.defaultValue=n.value;
+ for(const m of html.matchAll(/<form[^>]*id="([^"]+)"[^>]*>([\s\S]*?)<\/form>/g))ids.get(m[1]).fields=[...m[2].matchAll(/\bid="([^"]+)"/g)].map(x=>ids.get(x[1])).filter(Boolean);
+ const walk=n=>[n,...n.children.flatMap(walk)];
+ globalThis.document={getElementById:id=>{assert.ok(ids.has(id),id);return ids.get(id);},createElement:tag=>new Element(tag),body:new Element('body'),hidden:false,addEventListener:(k,f)=>events.set('document:'+k,f),querySelectorAll:selector=>{assert.equal(selector,'[data-bookmark]');return [...new Set([...ids.values()].flatMap(walk))].filter(n=>n.dataset.bookmark);}};
+ const storage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>{if(denyRemove)throw Error('denied');store.delete(k);}};
+ globalThis.window={localStorage:storage,addEventListener:(k,f)=>events.set(k,f)};
+ Object.defineProperty(globalThis,'navigator',{value:{onLine:true},configurable:true});
+ globalThis.Option=class extends Element{constructor(text,value){super('option');this.textContent=text;this.value=value??text;}};
+ globalThis.confirm=()=>true;
+ await import('../app.mjs?ui='+generation++);
+ return {ids,events,store,focused:()=>focused,all:()=>[...new Set([...ids.values()].flatMap(walk))],submit:id=>ids.get(id).onsubmit({preventDefault(){}})};
+}
+test('UI starts in session mode and unreadable state is never silently overwritten',async()=>{const e=await boot('{bad');assert.equal(e.ids.get('remember').checked,false);assert.equal(e.store.get(STORAGE_KEY),'{bad');assert.match(e.ids.get('storage-status').textContent,/not been overwritten/);});
+test('journal opt-in, hidden notes, restore and individual deletion use real event handlers',async()=>{const e=await boot();e.ids.get('mood').value='7';e.ids.get('note').value='sensitive note';e.submit('journal');assert.equal(e.store.has(STORAGE_KEY),false);assert.doesNotMatch(e.ids.get('history').textContent,/sensitive note/);e.ids.get('remember').checked=true;e.ids.get('remember').onchange();assert.equal(JSON.parse(e.store.get(STORAGE_KEY)).entries.length,1);e.ids.get('show-notes').checked=true;e.ids.get('show-notes').onchange();assert.match(e.ids.get('history').textContent,/sensitive note/);const backup=e.store.get(STORAGE_KEY);e.all().find(n=>n.tagName==='button'&&n.textContent==='Delete this reflection').click();assert.equal(JSON.parse(e.store.get(STORAGE_KEY)).entries.length,0);e.ids.get('restore-file').files=[{size:backup.length,text:async()=>backup}];await e.ids.get('restore-file').onchange();assert.equal(JSON.parse(e.store.get(STORAGE_KEY)).entries.length,1);});
+test('bookmark state synchronises cards in both recommendation and library areas',async()=>{const e=await boot();e.submit('check-form');let buttons=e.all().filter(n=>n.dataset.bookmark==='who-stress');assert.ok(buttons.length>=2);buttons[0].click();buttons=e.all().filter(n=>n.dataset.bookmark==='who-stress');assert.ok(buttons.every(n=>n.attributes['aria-pressed']==='true'));});
+test('failed deletion keeps saving toggle truthful',async()=>{const saved=JSON.stringify({version:1,saved:[],entries:[],done:[]});const e=await boot(saved,{denyRemove:true});e.ids.get('remember').checked=false;e.ids.get('remember').onchange();assert.equal(e.ids.get('remember').checked,true);assert.match(e.ids.get('storage-status').textContent,/Saving remains enabled/);});
+test('planner generates Urdu RTL and safety text without faith unless opted in',async()=>{const e=await boot();e.ids.get('plan-language').value='ur';e.ids.get('plan-language').onchange();e.submit('plan-form');assert.equal(e.ids.get('plan-result').dir,'rtl');assert.equal(e.focused(),'plan-result');e.ids.get('plan-unsafe').checked=true;e.submit('plan-form');assert.match(e.ids.get('plan-result').textContent,/فوری خطرہ/);});
+test('behavioural report handles uncertainty and focuses result; urgent focuses support',async()=>{const e=await boot();e.ids.get('behaviour-certainty').value='unsure';e.submit('behaviour-form');assert.match(e.ids.get('behaviour-report').textContent,/cannot determine/);assert.equal(e.focused(),'behaviour-report');e.ids.get('behaviour-unsafe').checked=true;e.submit('behaviour-form');assert.equal(e.focused(),'support');});
+test('cross-tab clear removes visible sensitive content and stops remembering',async()=>{const e=await boot();e.ids.get('mood').value='4';e.ids.get('note').value='private';e.submit('journal');e.events.get('storage')({key:STORAGE_KEY,newValue:null});assert.equal(e.ids.get('history').children.length,0);assert.equal(e.ids.get('remember').checked,false);assert.match(e.ids.get('storage-status').textContent,/another tab/);await new Promise(resolve=>setTimeout(resolve,5));});

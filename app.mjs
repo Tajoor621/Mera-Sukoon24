@@ -1,50 +1,153 @@
 import {behaviourReport} from './behaviour.mjs';
 import {resources,activities} from './resources.mjs';
-import {filterResources,suggest,emptyState,readState,writeState,STORAGE_KEY,localDay} from './core.mjs';
+import {filterResources,suggest,emptyState,writeState,STORAGE_KEY,localDay} from './core.mjs';
+import {openSession,removeSaved,parseBackup} from './session.mjs';
+import {makePlan,plannerTopics} from './planner.mjs';
 const $=id=>document.getElementById(id);
 const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
 let storage=null;try{storage=window.localStorage;}catch{/* Session mode remains available. */}
-let remember=false;try{remember=storage?.getItem(STORAGE_KEY)!==null&&storage!==null;}catch{}
-let state=remember?readState(storage):emptyState();$('remember').checked=remember;
+const initial=openSession(storage);
+let {remember,state}=initial;
+let historyLimit=7;
+$('remember').checked=remember;
 function persist(){
  if(!remember){$('storage-status').textContent='Session only. Nothing is saved for the next visit.';return;}
- const ok=writeState(storage,state);
- $('storage-status').textContent=ok?'Saved in this browser only.':'Browser storage is unavailable or full. Changes are in this session only; export to keep them.';
+ $('storage-status').textContent=writeState(storage,state)?'Saved in this browser only.':'Browser storage is unavailable or full. Changes are in this session only; export to keep them.';
 }
 function external(url,label){const a=el('a',label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';return a;}
+function updateBookmarks(){
+ for(const b of document.querySelectorAll('[data-bookmark]')){
+  const selected=state.saved.includes(b.dataset.bookmark);
+  b.textContent=selected?'Bookmarked ✓':'Bookmark';b.setAttribute('aria-pressed',String(selected));
+ }
+}
 function card(r){
  const a=el('article',undefined,'panel card');
  a.append(el('small',r.publisher+' · '+r.format),el('h3',r.title),el('p',r.description),el('small',r.languages.join(' / ')+' · Free access · Page reviewed '+r.reviewed),external(r.url,'Read / find downloads ↗'));
- const b=el('button',state.saved.includes(r.id)?'Bookmarked ✓':'Bookmark','secondary');b.setAttribute('aria-pressed',String(state.saved.includes(r.id)));b.setAttribute('aria-label','Bookmark '+r.title);
- b.onclick=()=>{state.saved=state.saved.includes(r.id)?state.saved.filter(x=>x!==r.id):[...state.saved,r.id];persist();renderResources();};a.append(b);return a;
+ const b=el('button',state.saved.includes(r.id)?'Bookmarked ✓':'Bookmark','secondary');
+ b.dataset.bookmark=r.id;b.setAttribute('aria-pressed',String(state.saved.includes(r.id)));b.setAttribute('aria-label','Bookmark '+r.title);
+ b.onclick=()=>{state.saved=state.saved.includes(r.id)?state.saved.filter(x=>x!==r.id):[...state.saved,r.id];persist();updateBookmarks();if($('saved-only').checked){renderResources();$('result-count').tabIndex=-1;$('result-count').focus();}};
+ a.append(b);return a;
 }
-function renderResources(){const list=filterResources({query:$('search').value,topic:$('topic').value,language:$('language').value,savedOnly:$('saved-only').checked,saved:state.saved});$('resources').replaceChildren(...list.map(card));$('result-count').textContent=list.length?list.length+' resources. External pages need an internet connection.':'No matching resources. Try clearing a filter.';}
-for(const tag of [...new Set(resources.flatMap(r=>r.tags))].sort()){$('topic').append(new Option(tag,tag));}
+function renderResources(){
+ const list=filterResources({query:$('search').value,topic:$('topic').value,language:$('language').value,savedOnly:$('saved-only').checked,saved:state.saved});
+ $('resources').replaceChildren(...list.map(card));
+ $('result-count').textContent=list.length?list.length+' resources. External pages need an internet connection.':'No matching resources. Try clearing a filter.';
+}
+for(const tag of [...new Set(resources.flatMap(r=>r.tags))].sort())$('topic').append(new Option(tag,tag));
 for(const id of ['search','topic','language','saved-only'])$(id).addEventListener('input',renderResources);
-$('check-form').onsubmit=e=>{e.preventDefault();const result=suggest({concern:$('concern').value,ongoing:$('ongoing').checked,interfering:$('interfering').checked,unsafe:$('unsafe').checked});const nodes=[el('p',result.message)];if(result.urgent){const a=el('a','Go to human support');a.href='#support';nodes.push(a);}else{const grid=el('div',undefined,'grid');grid.append(...result.ids.map(id=>card(resources.find(r=>r.id===id))));nodes.push(grid);}$('suggestions').replaceChildren(...nodes);if(result.urgent){$('support').focus();}};
+$('check-form').onsubmit=e=>{
+ e.preventDefault();
+ const result=suggest({concern:$('concern').value,ongoing:$('ongoing').checked,interfering:$('interfering').checked,unsafe:$('unsafe').checked});
+ const nodes=[el('p',result.message)];
+ if(result.urgent){const a=el('a','Go to human support');a.href='#support';nodes.push(a);}
+ else {const grid=el('div',undefined,'grid');grid.append(...result.ids.map(id=>card(resources.find(r=>r.id===id))));nodes.push(grid);}
+ $('suggestions').replaceChildren(...nodes);$(result.urgent?'support':'suggestions').focus();
+};
+function sourceList(ids){const list=el('ul');for(const id of ids){const r=resources.find(r=>r.id===id);if(!r)continue;const li=el('li');li.append(external(r.url,r.title+' — '+r.publisher+' ↗'));list.append(li);}return list;}
 $('behaviour-form').onsubmit=e=>{
  e.preventDefault();
- const result=behaviourReport({topic:$('behaviour-topic').value,role:$('behaviour-role').value,setting:$('behaviour-setting').value,repeated:$('behaviour-repeated').checked,impact:$('behaviour-impact').checked,minor:$('behaviour-minor').checked,eating:$('behaviour-eating').checked,unsafe:$('behaviour-unsafe').checked});
+ const result=behaviourReport({topic:$('behaviour-topic').value,role:$('behaviour-role').value,setting:$('behaviour-setting').value,certainty:$('behaviour-certainty').value,power:$('behaviour-power').checked,repeated:$('behaviour-repeated').checked,impact:$('behaviour-impact').checked,minor:$('behaviour-minor').checked,eating:$('behaviour-eating').checked,unsafe:$('behaviour-unsafe').checked});
  const report=el('article',undefined,'panel');report.append(el('h3',result.title),el('p',result.summary));
- for(const section of result.sections){report.append(el('h4',section.heading),el('p',section.text));}
  if(result.actions.length){report.append(el('h4','Your next steps'));const list=el('ol');list.append(...result.actions.map(action=>el('li',action)));report.append(list);}
- if(result.sources.length){report.append(el('h4','Further reading'));const list=el('ul');for(const id of result.sources){const r=resources.find(r=>r.id===id);const li=el('li');li.append(external(r.url,r.title+' — '+r.publisher+' ↗'));list.append(li);}report.append(list);}
- $('behaviour-report').replaceChildren(report);if(result.urgent)$('support').focus();
+ for(const section of result.sections){
+  const detail=el('details',undefined,'report-detail');if(result.urgent)detail.open=true;
+  detail.append(el('summary',section.heading),el('p',section.text));report.append(detail);
+ }
+ if(result.sources.length){report.append(el('h4','Further reading'),sourceList(result.sources));}
+ $('behaviour-report').replaceChildren(report);$(result.urgent?'support':'behaviour-report').focus();
 };
 $('behaviour-form').onreset=()=>$('behaviour-report').replaceChildren();
+const planLabels={en:['What would help?','Include optional faith-based comfort','I feel unsafe or need urgent help','Make a small plan','Clear plan'],roman:['Kis cheez mein madad chahiye?','Ikhtiyari roohani tasalli shamil karain','Main ghair mehfooz hoon ya foran madad chahiye','Chhota plan banain','Plan saaf karain'],ur:['کس چیز میں مدد چاہیے؟','اختیاری روحانی تسلی شامل کریں','میں غیر محفوظ ہوں یا فوری مدد چاہیے','چھوٹا منصوبہ بنائیں','منصوبہ صاف کریں']};
+function renderPlanOptions(){
+ const lang=$('plan-language').value,selected=$('plan-topic').value;
+ $('plan-topic').replaceChildren(...plannerTopics.map(t=>new Option(t.labels[lang],t.id)));
+ if(plannerTopics.some(t=>t.id===selected))$('plan-topic').value=selected;
+ for(const [index,id] of ['plan-topic-label','plan-faith-label','plan-unsafe-label','plan-submit','plan-reset'].entries())$(id).textContent=planLabels[lang][index];
+ $('plan-form').lang=lang==='roman'?'ur-Latn':lang==='ur'?'ur':'en-GB';$('plan-form').dir=lang==='ur'?'rtl':'ltr';
+ $('plan-result').replaceChildren();
+}
+$('plan-language').onchange=renderPlanOptions;
+$('plan-form').onsubmit=e=>{
+ e.preventDefault();const result=makePlan({topic:$('plan-topic').value,language:$('plan-language').value,faith:$('plan-faith').checked,unsafe:$('plan-unsafe').checked});
+ const target=$('plan-result');target.lang=result.lang==='roman'?'ur-Latn':result.lang==='ur'?'ur':'en-GB';target.dir=result.dir;
+ const panel=el('article',undefined,'panel');panel.append(el('h3',result.title),el('p',result.intro));
+ if(result.actions.length){panel.append(el('h4',result.heading));const list=el('ol');list.append(...result.actions.map(a=>el('li',a)));panel.append(list,el('p',result.followup),el('p',result.question));}
+ panel.append(el('p',result.limit,'muted'));if(result.sources.length)panel.append(sourceList(result.sources));target.replaceChildren(panel);target.focus();
+};
+$('plan-form').onreset=()=>{ $('plan-result').replaceChildren();setTimeout(renderPlanOptions,0); };
 let breathTimer=null,deadline=0;
-function stopBreath(message='Paused. You can return whenever you like.') {clearInterval(breathTimer);breathTimer=null;$('breath').classList.remove('running');$('breath-start').disabled=false;$('breath-stop').disabled=true;$('breath-status').textContent=message;}
-$('breath-start').onclick=()=>{stopBreath();deadline=Date.now()+60000;$('breath').classList.add('running');$('breath-start').disabled=true;$('breath-stop').disabled=false;$('breath-status').textContent='Breathe at your own pace. 60 seconds remaining.';breathTimer=setInterval(()=>{const left=Math.max(0,Math.ceil((deadline-Date.now())/1000));if(!left)stopBreath('Your minute is complete. Notice how you feel; no particular result is required.');else $('breath-status').textContent='Breathe at your own pace. '+left+' seconds remaining.';},1000);};
-$('breath-stop').onclick=()=>stopBreath();document.addEventListener('visibilitychange',()=>{if(document.hidden&&breathTimer)stopBreath('Paused while the app was away.');});
+function stopBreath(message='Paused. You can return whenever you like.'){
+ clearInterval(breathTimer);breathTimer=null;$('breath').classList.remove('running');$('breath-start').disabled=false;$('breath-stop').disabled=true;$('breath-status').textContent=message;$('breath-count').textContent='';
+}
+$('breath-start').onclick=()=>{
+ stopBreath();deadline=Date.now()+60000;$('breath').classList.add('running');$('breath-start').disabled=true;$('breath-stop').disabled=false;$('breath-status').textContent='Breathe at your own comfortable pace. Stop whenever you wish.';$('breath-count').textContent='60 seconds remaining';
+ breathTimer=setInterval(()=>{const left=Math.max(0,Math.ceil((deadline-Date.now())/1000));if(!left)stopBreath('Your minute is complete. Notice how you feel; no particular result is required.');else $('breath-count').textContent=left+' seconds remaining';},1000);
+};
+$('breath-stop').onclick=()=>stopBreath();
 const ground=['Notice five things you can see.','Notice four things you can feel safely, such as the chair supporting you.','Notice three sounds around you.','Notice two scents, or two colours if scents are not comfortable.','Notice one taste already present, or one detail you appreciate.','Take a moment to notice the room. You can finish here.'];let groundIndex=0;
 function renderGround(){$('ground-step').textContent=ground[groundIndex];$('ground-next').disabled=groundIndex===ground.length-1;}
 $('ground-next').onclick=()=>{groundIndex=Math.min(ground.length-1,groundIndex+1);renderGround();};$('ground-reset').onclick=()=>{groundIndex=0;renderGround();};
-function renderActivities(){const today=localDay();$('activities').replaceChildren(...activities.map(a=>{const n=el('article',undefined,'panel card');const key=today+':'+a.id;const complete=state.done.includes(key);const b=el('button',complete?'Done for today ✓':'Mark done','secondary');b.setAttribute('aria-pressed',String(complete));b.onclick=()=>{state.done=complete?state.done.filter(x=>x!==key):[...state.done,key].slice(-540);persist();renderActivities();};n.append(el('h3',a.label),el('p',a.text),external(resources.find(r=>r.id===a.source).url,'Why this may help ↗'),b);return n;}));}
-function renderHistory(){const entries=state.entries;$('history-summary').textContent=entries.length?entries.length+' reflections (up to 90 retained). These are your own ratings, not clinical scores.':'No reflections yet. Skipping is fine.';$('history').replaceChildren(...entries.slice(-7).reverse().map(e=>el('li',new Date(e.at).toLocaleString()+' · Mood '+e.mood+'/10'+(e.note?'\n'+e.note:''))));}
-$('journal').onsubmit=e=>{e.preventDefault();const mood=Number($('mood').value);if(!Number.isInteger(mood)||mood<1||mood>10){$('mood').setCustomValidity('Choose a mood number from 1 to 10.');$('mood').reportValidity();return;}$('mood').setCustomValidity('');state.entries=[...state.entries,{at:new Date().toISOString(),mood,note:$('note').value.slice(0,2000)}].slice(-90);$('note').value='';persist();renderHistory();};$('mood').onchange=()=>$('mood').setCustomValidity('');
-$('remember').onchange=()=>{remember=$('remember').checked;if(!remember){try{storage?.removeItem(STORAGE_KEY);}catch{$('storage-status').textContent='Could not remove browser data. Clear this site’s storage in browser settings.';return;}}persist();};
-$('export').onclick=()=>{const blob=new Blob([JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=el('a');a.href=url;a.download='sukoon-reflections-'+localDay()+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);};
-$('erase').onclick=()=>{if(!confirm('Clear bookmarks, activities and reflections from this app and browser? Exported files are not removed.'))return;state=emptyState();$('behaviour-form').reset();$('check-form').reset();$('suggestions').replaceChildren();remember=false;$('remember').checked=false;$('note').value='';$('mood').value='';let removed=true;try{storage?.removeItem(STORAGE_KEY);}catch{removed=false;}renderResources();renderHistory();renderActivities();persist();if(!removed)$('storage-status').textContent='Session cleared. Browser data could not be removed; clear this site’s storage in browser settings.';};
+function renderActivities(){
+ const today=localDay();$('activities').replaceChildren(...activities.map(a=>{
+  const n=el('article',undefined,'panel card'),key=today+':'+a.id,complete=state.done.includes(key);
+  const b=el('button',complete?'Done for today ✓':'Mark done','secondary');b.setAttribute('aria-pressed',String(complete));
+  b.onclick=()=>{state.done=complete?state.done.filter(x=>x!==key):[...state.done,key].slice(-540);persist();renderActivities();};
+  n.append(el('h3',a.label),el('p',a.text),external(resources.find(r=>r.id===a.source).url,'Why this may help ↗'),b);return n;
+ }));
+}
+function renderHistory(){
+ const entries=state.entries;$('history-summary').textContent=entries.length?entries.length+' reflections (up to 90 retained). These are your own ratings, not clinical scores.':'No reflections yet. Skipping is fine.';
+ $('history').replaceChildren(...entries.slice(-historyLimit).reverse().map((entry,offset)=>{
+  const index=entries.length-1-offset,n=el('li');n.append(el('div',new Date(entry.at).toLocaleString()+' · Mood '+entry.mood+'/10','entry-meta'));
+  if($('show-notes').checked&&entry.note)n.append(el('p',entry.note,'entry-note'));
+  const b=el('button','Delete this reflection','secondary');b.onclick=()=>{if(!confirm('Delete this reflection? This cannot be undone in this app.'))return;state.entries.splice(index,1);persist();renderHistory();};n.append(b);return n;
+ }));
+ $('history-more').hidden=historyLimit>=entries.length;
+}
+$('show-notes').onchange=renderHistory;$('history-more').onclick=()=>{historyLimit+=7;renderHistory();};
+$('journal').onsubmit=e=>{
+ e.preventDefault();const mood=Number($('mood').value);if(!Number.isInteger(mood)||mood<1||mood>10){$('mood').setCustomValidity('Choose a mood number from 1 to 10.');$('mood').reportValidity();return;}
+ $('mood').setCustomValidity('');state.entries=[...state.entries,{at:new Date().toISOString(),mood,note:$('note').value.slice(0,2000)}].slice(-90);$('note').value='';persist();renderHistory();$('journal-status').textContent=remember?'Reflection added; check the storage status below.':'Reflection added for this session only.';
+};$('mood').onchange=()=>$('mood').setCustomValidity('');
+$('remember').onchange=()=>{
+ const next=$('remember').checked;
+ if(!next&&!removeSaved(storage)){$('remember').checked=remember;$('storage-status').textContent='Could not remove browser data. Saving remains enabled; clear this site’s storage in browser settings.';return;}
+ remember=next;persist();
+};
+$('export').onclick=()=>{
+ const blob=new Blob([JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=el('a');a.href=url;a.download='sukoon-reflections-'+localDay()+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+$('restore').onclick=()=>$('restore-file').click();
+$('restore-file').onchange=async()=>{
+ const file=$('restore-file').files[0];if(!file)return;
+ try{
+  if(file.size>600000)throw Error('Choose an export smaller than 600 KB.');
+  const incoming=parseBackup(await file.text());
+  if(!confirm('Replace current bookmarks, activity records and reflections with '+incoming.entries.length+' reflections from this export? Export current data first if needed.'))return;
+  state=incoming;historyLimit=7;renderResources();renderActivities();renderHistory();updateBookmarks();persist();$('journal-status').textContent='Export restored. Local saving preference was not changed.';
+ }catch(error){$('storage-status').textContent=error.message;}
+ finally{$('restore-file').value='';}
+};
+function clearVisible(){
+ $('behaviour-form').reset();$('plan-form').reset();$('check-form').reset();$('suggestions').replaceChildren();$('note').value='';$('mood').value='';$('mood').setCustomValidity('');$('show-notes').checked=false;$('saved-only').checked=false;$('journal-status').textContent='';historyLimit=7;groundIndex=0;renderGround();stopBreath();
+}
+function renderState(){renderResources();renderHistory();renderActivities();updateBookmarks();}
+$('erase').onclick=()=>{
+ if(!confirm('Clear bookmarks, activities, plans and reflections from this app and browser? Exported files are not removed.'))return;
+ const removed=removeSaved(storage);state=emptyState();remember=false;$('remember').checked=false;clearVisible();renderState();persist();
+ if(!removed)$('storage-status').textContent='Session cleared. Browser data could not be removed; clear this site’s storage in browser settings before leaving.';
+};
+window.addEventListener('storage',event=>{
+ if(event.key!==STORAGE_KEY&&event.key!==null)return;
+ if(event.newValue===null){state=emptyState();remember=false;$('remember').checked=false;clearVisible();renderState();$('storage-status').textContent='Saved data was cleared in another tab. This tab was cleared too.';}
+ else if(remember){const incoming=openSession(storage);state=incoming.state;remember=incoming.remember;$('remember').checked=remember;renderState();$('storage-status').textContent='Saved records changed in another tab and have been refreshed.';}
+});
 const network=()=>{$('offline-status').textContent=navigator.onLine?'':'You appear to be offline. Publisher links need internet access.';};window.addEventListener('online',network);window.addEventListener('offline',network);
-renderResources();renderActivities();renderHistory();persist();network();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{$('offline-status').textContent='Offline caching is unavailable. The tools still work while this page stays open.';});
+function resume(){if(!document.hidden)renderActivities();else if(breathTimer)stopBreath('Paused while the app was away.');}
+window.addEventListener('focus',resume);document.addEventListener('visibilitychange',resume);
+renderState();renderPlanOptions();network();
+$('storage-status').textContent=initial.status==='saved'?'Saved records loaded from this browser.':initial.status==='unreadable'||initial.status==='unavailable'?'Saved data could not be read. Session mode is active; existing stored data has not been overwritten.':'Session only. Nothing is saved for the next visit.';
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').then(registration=>{
+ const notify=()=>{if(registration.waiting)$('update-status').textContent='A new version is ready. Finish or export unsaved reflections, then close all Sukoon tabs and reopen to update.';};notify();registration.addEventListener('updatefound',()=>{const worker=registration.installing;worker?.addEventListener('statechange',notify);});
+}).catch(()=>{$('offline-status').textContent='Offline caching is unavailable. The tools still work while this page stays open.';});

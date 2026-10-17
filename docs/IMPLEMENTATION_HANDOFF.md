@@ -1,6 +1,6 @@
 # Sukoon implementation handoff
 
-> Historical specification handoff from the first export. For the current v0.3.0 browser tools, see [README](../README.md), [resource policy](FREE_RESOURCES.md) and [verification](VERIFICATION.md). Statements below about documentation-only status describe that initial export, not the current repository.
+> Historical specification handoff from the first export. For the current v0.4.0 browser tools, see [README](../README.md), [resource policy](FREE_RESOURCES.md) and [verification](VERIFICATION.md). Statements below about documentation-only status describe that initial export, not the current repository.
 
 ## What has been exported
 

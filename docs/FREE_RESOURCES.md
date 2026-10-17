@@ -1,4 +1,4 @@
-# Free resources and wellbeing module — v0.3.0
+# Free resources and wellbeing module — v0.4.0
 
 ## Selection and cost
 
@@ -24,7 +24,7 @@ Free to read is different from openly licensed. Publisher licences govern reuse,
 | NHS | https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/five-steps-to-mental-wellbeing/ | Small wellbeing activity suggestions |
 | NHS | https://www.nhs.uk/every-mind-matters/mental-health-issues/sleep/ | Sleep information |
 
-Review means the official landing page was inspected, not that every linked file or exercise has been clinically reviewed by this project. WHO lists an Urdu edition; its specific download target could not be independently retrieved during this work. The app therefore points to the language list, not an unverified PDF URL. Availability can change. UI text is English; full Urdu/Roman Urdu localisation is not implemented in this module.
+Review means the official landing page was inspected, not that every linked file or exercise has been clinically reviewed by this project. WHO lists an Urdu edition; its specific download target could not be independently retrieved during this work. The app therefore points to the language list, not an unverified PDF URL. Availability can change. The five-topic next-step planner offers English, Urdu script and Roman Urdu. Other tools remain English; full app localisation is not implemented.
 
 ## Dopamine and improvement claims
 
@@ -34,13 +34,13 @@ The application supports manageable activities and subjective reflection, not ne
 
 The check-in uses only the user's selected topic plus flags for ongoing distress, interference with daily life and urgent safety needs. It uses no clinical questionnaire, diagnostic cut-off, hidden risk inference or language-model call. Recommendations explain their limits. Urgent selection suppresses reading suggestions and focuses the human-support section; it does not dispatch help or assess safety reliably.
 
-The original master prompt's archived contact numbers are not used in the interface. No unverified suicide/self-harm helplines are shipped in this module. Human support guidance remains available regardless of check-in selections. Severe, persistent or impairing symptoms need appropriate professional assessment.
+The current master prompt and interface do not ship hardcoded crisis contact numbers. No unverified suicide/self-harm helplines are shipped in this module. Human support guidance remains available regardless of check-in selections. Severe, persistent or impairing symptoms need appropriate professional assessment.
 
 ## Privacy and offline behaviour
 
 No analytics, remote fonts, advertising SDKs, CDNs or third-party scripts are loaded. Resource links only open after a user action, with no referrer sent. Page hosting still involves ordinary server requests. Third-party publishers apply their own privacy rules when opened.
 
-Data begins in tab memory. Opt-in writes bookmarks, activity completion dates and reflections to localStorage; switching it off removes the saved copy while keeping the current session available. Browser storage is not app-encrypted and is unsuitable for guaranteed confidentiality. Clear removes the app's state; exports and operating-system/browser backups remain outside its control. JSON exports are plain text. No automatic import or server synchronisation is implemented.
+Data begins in tab memory. Opt-in writes bookmarks, activity completion dates and reflections to localStorage; switching it off removes the saved copy while keeping the current session available. Browser storage is not app-encrypted and is unsuitable for guaranteed confidentiality. Clear removes the app's state; exports and operating-system/browser backups remain outside its control. JSON exports are plain text. User-confirmed JSON restore replaces existing records after validation. It does not enable local saving. No server synchronisation is implemented.
 
 The service worker caches only local app assets. It does not cache external books, requests to publishers, reflections, notes or arbitrary URLs. Use a private browser profile if needed; this does not guarantee privacy against device monitoring.
 
@@ -50,7 +50,7 @@ Edit `resources.mjs` to add an official HTTPS URL, publisher, languages actually
 
 The companion's thirteen domain specifications remain intact. These browser tools do not yet implement the full AI companion.
 
-## Body shaming and racism — v0.3.0
+## Body shaming and racism — v0.4.0
 
 Module L now covers body shaming, colourism, racism and behavioural reflection. The dedicated previous module has been replaced in the current specification and documentation. Prior commits remain in Git history.
 
@@ -62,3 +62,11 @@ Additional official sources reviewed on 17 October 2026:
 - Mind racism and mental health: https://www.mind.org.uk/information-support/tips-for-everyday-living/racism-and-mental-health/ — free reading; linked services and legal information may be UK-specific.
 
 These publishers did not author, validate or endorse the app's response rules. Text is original educational guidance informed by the topics above, not a clinical assessment. The interface remains English and the workflow remains free of paid APIs.
+
+## v0.4.0 planner and data controls
+
+The next-step planner provides original, short educational prompts for stress, low mood, sleep, self-criticism and connection. These draw on the already-listed WHO, CCI and NHS topics; publishers have not reviewed the plans. Faith-based comfort is included only after an explicit checkbox. The planner is not a conversation engine and does not interpret free text, measure symptoms or diagnose. Its Urdu/Roman Urdu text needs independent language review before a public multilingual release.
+
+Reflection text is hidden by default on screen, not encrypted or removed from browser memory. Users can reveal it, see older entries, delete individual records and restore a validated export with confirmation. Restoring replaces the records; it does not merge them. Removing saved data in another same-origin tab clears this tab as well. Browser data can still be exposed by a shared device or browser backups.
+
+Offline assets now remain within one installed release. A waiting update asks users to finish/export their session, close all Sukoon tabs and reopen; it does not force a reload during a reflection. Publishers' books are still not cached.
