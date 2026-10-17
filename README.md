@@ -4,7 +4,41 @@ A warm, culturally aware AI companion for clarity, comfort, and practical next s
 
 ## Project status
 
-This repository currently contains the Sukoon conversation specification and implementation guidance. It does **not** yet contain a working Android app, web app, AI backend, deployed service, or clinically validated product.
+Version 0.2.0 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app, live hosting or clinical validation is included.
+
+## Free wellbeing tools
+
+- 13 curated entries from WHO, NHS and the Centre for Clinical Interventions (CCI): books, workbooks, worksheets, guidance and available audio.
+- Urdu edition signpost for WHO's stress guide; the interface itself is currently English.
+- Search and topic/language filters, bookmarks and source attribution.
+- Optional check-in routes selected concerns to reading. It is not a validated screening instrument.
+- Comfortable breathing timer, sensory grounding and small daily activities.
+- Optional mood/reflection history (latest 90 entries; last seven shown), JSON export and deletion.
+- Session-only data by default; saving to this browser requires explicit opt-in.
+- Offline app shell after a successful online visit and service-worker installation. External books and publisher pages are not cached.
+
+No runtime dependencies, subscriptions, keys, advertisements or paid APIs. No claim that the app measures or increases dopamine. The catalogue contains official free-access resources, not pirated commercial books and not every book available online.
+
+## Run and check
+
+Serve this directory over localhost, for example:
+
+```sh
+python3 -m http.server 8000
+```
+
+Visit `http://localhost:8000`. ES modules require HTTP serving; opening `index.html` directly as a file is unsupported.
+
+```sh
+npm test
+npm run check
+```
+
+Node 22 or newer is recommended for checks; no installation step is required.
+
+For free GitHub Pages hosting, the repository owner can select **Settings → Pages → Deploy from a branch → main → /(root)**. This change does not enable hosting automatically and no live URL has been verified. Service workers need HTTPS (or localhost). Device/browser installation support varies; no APK is produced.
+
+See [free resource policy and sources](docs/FREE_RESOURCES.md) and [verification notes](docs/VERIFICATION.md).
 
 ## Companion principles
 
@@ -46,3 +80,4 @@ Read the original prompt together with the runtime guidance. For a future AI int
 The original brief includes user-supplied helpline numbers. These are archived reference text, **not a verified resource directory**. Verify current location, service scope, and availability before displaying any crisis contact.
 
 No personal conversation history, credentials, or private case details are included.
+

@@ -1,5 +1,7 @@
 # Sukoon implementation handoff
 
+> Historical specification handoff from the first export. For the current v0.2.0 browser tools, see [README](../README.md), [resource policy](FREE_RESOURCES.md) and [verification](VERIFICATION.md). Statements below about documentation-only status describe that initial export, not the current repository.
+
 ## What has been exported
 
 The approved companion identity and thirteen modules, bilingual language protocol, intake and response patterns, relationship assessment approach, faith preference, regional scope, and ethical brief are in the source prompt. Runtime guidance documents the limits clarified in the conversation.
@@ -39,3 +41,4 @@ These are planned acceptance scenarios, not passing test results.
 ## Export checks
 
 For this documentation-only handoff, verify that all four files are present, all thirteen domain headings A–M exist, relative Markdown links resolve, and remote file contents match the prepared export. These checks do not establish clinical safety or validate an app.
+
