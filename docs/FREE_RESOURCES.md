@@ -1,4 +1,4 @@
-# Free resources and wellbeing module — v0.2.0
+# Free resources and wellbeing module — v0.3.0
 
 ## Selection and cost
 
@@ -49,3 +49,16 @@ The service worker caches only local app assets. It does not cache external book
 Edit `resources.mjs` to add an official HTTPS URL, publisher, languages actually offered, format, topic tags, original short description, access/rights note and review date. Verify access and download terms before adding a resource. Do not add paywalled books, unauthorised mirrors, diagnoses disguised as quizzes or unsupported dopamine claims. Recheck links periodically; no automatic link-monitoring service is configured.
 
 The companion's thirteen domain specifications remain intact. These browser tools do not yet implement the full AI companion.
+
+## Body shaming and racism — v0.3.0
+
+Module L now covers body shaming, colourism, racism and behavioural reflection. The dedicated previous module has been replaced in the current specification and documentation. Prior commits remain in Git history.
+
+The form asks about topic, perspective, setting, recurrence, everyday impact, under-18 involvement, eating-related concerns and immediate safety. It requests no photographs, weight, BMI, racial classification or incident narrative. Responses explain the selected pattern, offer context and scripts, and provide up to four next steps. They do not label people, infer motives, prescribe body change or decide legal guilt. Threats override ordinary reports. Reports and form selections are not included in localStorage or JSON exports; reset clears the result.
+
+Additional official sources reviewed on 17 October 2026:
+
+- YoungMinds body image: https://www.youngminds.org.uk/young-person/coping-with-life/body-image/ — young-person-focused, free reading; services may have age/geographic restrictions.
+- Mind racism and mental health: https://www.mind.org.uk/information-support/tips-for-everyday-living/racism-and-mental-health/ — free reading; linked services and legal information may be UK-specific.
+
+These publishers did not author, validate or endorse the app's response rules. Text is original educational guidance informed by the topics above, not a clinical assessment. The interface remains English and the workflow remains free of paid APIs.

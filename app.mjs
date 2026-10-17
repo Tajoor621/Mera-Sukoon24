@@ -1,3 +1,4 @@
+import {behaviourReport} from './behaviour.mjs';
 import {resources,activities} from './resources.mjs';
 import {filterResources,suggest,emptyState,readState,writeState,STORAGE_KEY,localDay} from './core.mjs';
 const $=id=>document.getElementById(id);
@@ -21,6 +22,16 @@ function renderResources(){const list=filterResources({query:$('search').value,t
 for(const tag of [...new Set(resources.flatMap(r=>r.tags))].sort()){$('topic').append(new Option(tag,tag));}
 for(const id of ['search','topic','language','saved-only'])$(id).addEventListener('input',renderResources);
 $('check-form').onsubmit=e=>{e.preventDefault();const result=suggest({concern:$('concern').value,ongoing:$('ongoing').checked,interfering:$('interfering').checked,unsafe:$('unsafe').checked});const nodes=[el('p',result.message)];if(result.urgent){const a=el('a','Go to human support');a.href='#support';nodes.push(a);}else{const grid=el('div',undefined,'grid');grid.append(...result.ids.map(id=>card(resources.find(r=>r.id===id))));nodes.push(grid);}$('suggestions').replaceChildren(...nodes);if(result.urgent){$('support').focus();}};
+$('behaviour-form').onsubmit=e=>{
+ e.preventDefault();
+ const result=behaviourReport({topic:$('behaviour-topic').value,role:$('behaviour-role').value,setting:$('behaviour-setting').value,repeated:$('behaviour-repeated').checked,impact:$('behaviour-impact').checked,minor:$('behaviour-minor').checked,eating:$('behaviour-eating').checked,unsafe:$('behaviour-unsafe').checked});
+ const report=el('article',undefined,'panel');report.append(el('h3',result.title),el('p',result.summary));
+ for(const section of result.sections){report.append(el('h4',section.heading),el('p',section.text));}
+ if(result.actions.length){report.append(el('h4','Your next steps'));const list=el('ol');list.append(...result.actions.map(action=>el('li',action)));report.append(list);}
+ if(result.sources.length){report.append(el('h4','Further reading'));const list=el('ul');for(const id of result.sources){const r=resources.find(r=>r.id===id);const li=el('li');li.append(external(r.url,r.title+' — '+r.publisher+' ↗'));list.append(li);}report.append(list);}
+ $('behaviour-report').replaceChildren(report);if(result.urgent)$('support').focus();
+};
+$('behaviour-form').onreset=()=>$('behaviour-report').replaceChildren();
 let breathTimer=null,deadline=0;
 function stopBreath(message='Paused. You can return whenever you like.') {clearInterval(breathTimer);breathTimer=null;$('breath').classList.remove('running');$('breath-start').disabled=false;$('breath-stop').disabled=true;$('breath-status').textContent=message;}
 $('breath-start').onclick=()=>{stopBreath();deadline=Date.now()+60000;$('breath').classList.add('running');$('breath-start').disabled=true;$('breath-stop').disabled=false;$('breath-status').textContent='Breathe at your own pace. 60 seconds remaining.';breathTimer=setInterval(()=>{const left=Math.max(0,Math.ceil((deadline-Date.now())/1000));if(!left)stopBreath('Your minute is complete. Notice how you feel; no particular result is required.');else $('breath-status').textContent='Breathe at your own pace. '+left+' seconds remaining.';},1000);};
@@ -33,7 +44,7 @@ function renderHistory(){const entries=state.entries;$('history-summary').textCo
 $('journal').onsubmit=e=>{e.preventDefault();const mood=Number($('mood').value);if(!Number.isInteger(mood)||mood<1||mood>10){$('mood').setCustomValidity('Choose a mood number from 1 to 10.');$('mood').reportValidity();return;}$('mood').setCustomValidity('');state.entries=[...state.entries,{at:new Date().toISOString(),mood,note:$('note').value.slice(0,2000)}].slice(-90);$('note').value='';persist();renderHistory();};$('mood').onchange=()=>$('mood').setCustomValidity('');
 $('remember').onchange=()=>{remember=$('remember').checked;if(!remember){try{storage?.removeItem(STORAGE_KEY);}catch{$('storage-status').textContent='Could not remove browser data. Clear this site’s storage in browser settings.';return;}}persist();};
 $('export').onclick=()=>{const blob=new Blob([JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=el('a');a.href=url;a.download='sukoon-reflections-'+localDay()+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);};
-$('erase').onclick=()=>{if(!confirm('Clear bookmarks, activities and reflections from this app and browser? Exported files are not removed.'))return;state=emptyState();remember=false;$('remember').checked=false;$('note').value='';$('mood').value='';let removed=true;try{storage?.removeItem(STORAGE_KEY);}catch{removed=false;}renderResources();renderHistory();renderActivities();persist();if(!removed)$('storage-status').textContent='Session cleared. Browser data could not be removed; clear this site’s storage in browser settings.';};
+$('erase').onclick=()=>{if(!confirm('Clear bookmarks, activities and reflections from this app and browser? Exported files are not removed.'))return;state=emptyState();$('behaviour-form').reset();$('check-form').reset();$('suggestions').replaceChildren();remember=false;$('remember').checked=false;$('note').value='';$('mood').value='';let removed=true;try{storage?.removeItem(STORAGE_KEY);}catch{removed=false;}renderResources();renderHistory();renderActivities();persist();if(!removed)$('storage-status').textContent='Session cleared. Browser data could not be removed; clear this site’s storage in browser settings.';};
 const network=()=>{$('offline-status').textContent=navigator.onLine?'':'You appear to be offline. Publisher links need internet access.';};window.addEventListener('online',network);window.addEventListener('offline',network);
 renderResources();renderActivities();renderHistory();persist();network();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{$('offline-status').textContent='Offline caching is unavailable. The tools still work while this page stays open.';});

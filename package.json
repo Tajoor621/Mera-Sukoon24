@@ -1,1 +1,1 @@
-{"name":"mera-sukoon24","version":"0.2.0","private":true,"type":"module","scripts":{"test":"node --test tests/*.test.mjs","check":"node --check app.mjs && node --check core.mjs && node --check resources.mjs && node --check sw.js"}}
+{"name":"mera-sukoon24","version":"0.3.0","private":true,"type":"module","scripts":{"test":"node --test tests/*.test.mjs","check":"node --check app.mjs && node --check behaviour.mjs && node --check core.mjs && node --check resources.mjs && node --check sw.js"}}

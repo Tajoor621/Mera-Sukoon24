@@ -1,8 +1,8 @@
-# Verification — v0.2.0
+# Verification — v0.3.0
 
 ## Completed
 
-- `npm test`: 10 automated tests passed.
+- `npm test`: 17 automated tests passed.
 - `npm run check`: syntax checks passed for all runtime JavaScript modules and the service worker.
 - Tests cover resource metadata, topic/language/bookmark filters, urgent routing, professional-support prompts, storage failures, data limits, state round trips, source references, DOM binding IDs and offline asset completeness.
 - Official landing pages reviewed for the curated resources; see FREE_RESOURCES.md for retrieval limits.
@@ -21,3 +21,9 @@ No browser automation, real iPhone/Android testing, visual screenshot review, ho
 6. After a successful initial visit and service-worker activation, disconnect and reload. App tools should remain usable; publisher links require connectivity.
 7. Select urgent help in the check-in: no reading cards should be recommended; the human-support section should receive focus.
 8. Check small screens, zoom, keyboard focus, readable contrast and screen-reader labels. Test installation per browser; SVG-only manifest icons may limit install support on some devices.
+
+## Body-shaming and racism review
+
+Automated tests cover all 45 topic/perspective/setting combinations, threat overrides, distinct victim/witness/accountability guidance, recurrence, minors, eating-related concerns, context-specific guidance, source references, invalid input fallback and retention of thirteen master-prompt modules.
+
+Before release, manually check each form selection, report rendering/reset, safety-section focus, Clear all data clearing the form/report, and offline availability of behaviour.mjs. The reports have not been reviewed by a clinician and no full conversational AI assessment exists.

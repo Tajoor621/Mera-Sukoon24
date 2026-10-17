@@ -1,5 +1,5 @@
-const CACHE='sukoon-shell-v0.2.0';
-const SHELL=['./','./index.html','./styles.css','./app.mjs','./core.mjs','./resources.mjs','./manifest.webmanifest','./icon.svg'];
+const CACHE='sukoon-shell-v0.3.0';
+const SHELL=['./','./index.html','./styles.css','./app.mjs','./core.mjs','./behaviour.mjs','./resources.mjs','./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('sukoon-shell-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',event=>{

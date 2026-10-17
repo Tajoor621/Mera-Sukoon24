@@ -16,6 +16,8 @@ export const resources=[
  item('cci-start','Put Off Procrastinating','CCI, Government of Western Australia',cci+'Procrastination',['motivation','learning'],'Workbook','Practical ways to understand task avoidance and take manageable steps.'),
  item('nhs-breathe','Breathing exercises for stress','NHS',nhs+'breathing-exercises-for-stress/',['stress','grounding','panic'],'Guide','Comfortable, unforced breathing guidance. Adapt to your comfort and stop if it makes you feel worse.'),
  item('nhs-five','Five steps to mental wellbeing','NHS',nhs+'five-steps-to-mental-wellbeing/',['connection','movement','learning','motivation'],'Guide','Ideas for connection, activity, learning, kindness and attention to the present.'),
+ item('ym-body','Body image and body shaming','YoungMinds','https://www.youngminds.org.uk/young-person/coping-with-life/body-image/',['body shaming','self-kindness'],'Guide','Young-person-focused reading on appearance pressures and finding support. Broader services may have UK or age eligibility limits.'),
+ item('mind-racism','Racism and mental health','Mind','https://www.mind.org.uk/information-support/tips-for-everyday-living/racism-and-mental-health/',['racism','colourism','connection'],'Guide','Information about the effects of racism and support choices. Linked services and legal information may be UK-specific.'),
  item('nhs-sleep','Sleep problems','NHS','https://www.nhs.uk/every-mind-matters/mental-health-issues/sleep/',['sleep','low mood'],'Guide','Information about sleep difficulties, routines and when to seek further support.')
 ];
 export const activities=[

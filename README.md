@@ -4,13 +4,14 @@ A warm, culturally aware AI companion for clarity, comfort, and practical next s
 
 ## Project status
 
-Version 0.2.0 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app, live hosting or clinical validation is included.
+Version 0.3.0 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app, live hosting or clinical validation is included.
 
 ## Free wellbeing tools
 
-- 13 curated entries from WHO, NHS and the Centre for Clinical Interventions (CCI): books, workbooks, worksheets, guidance and available audio.
+- 15 curated entries from WHO, NHS, CCI, Mind and YoungMinds: books, workbooks, worksheets, guidance and available audio.
 - Urdu edition signpost for WHO's stress guide; the interface itself is currently English.
 - Search and topic/language filters, bookmarks and source attribution.
+- Body-shaming/racism reflection with affected-person, witness and own-behaviour perspectives; setting-specific guidance, safe boundary/apology scripts, safeguarding and up to four next steps. Reports use transparent rules, not AI or expert individual evaluation.
 - Optional check-in routes selected concerns to reading. It is not a validated screening instrument.
 - Comfortable breathing timer, sensory grounding and small daily activities.
 - Optional mood/reflection history (latest 90 entries; last seven shown), JSON export and deletion.
@@ -64,12 +65,12 @@ See [free resource policy and sources](docs/FREE_RESOURCES.md) and [verification
 | I | Career crisis and life transitions |
 | J | Grief after losing a child |
 | K | Infertility and fertility struggles |
-| L | LGBTQ+ support with cultural and personal safety |
+| L | Body shaming, racism and behavioural reflection |
 | M | Spiritual crisis |
 
 ## Repository contents
 
-- [Original master prompt](prompts/SUKOON_MASTER_PROMPT.md): the supplied product and conversation brief, preserved as the source specification.
+- [Current master prompt](prompts/SUKOON_MASTER_PROMPT.md): the product and conversation brief, including the updated module L.
 - [Runtime guidance](docs/RUNTIME_GUIDANCE.md): how to apply the brief without false clinical claims, privacy promises, or unverified crisis contacts.
 - [Implementation handoff](docs/IMPLEMENTATION_HANDOFF.md): integration steps, review scenarios, and the boundary between exported specifications and future implementation.
 
