@@ -1,5 +1,5 @@
-const CACHE='sukoon-shell-v0.4.0';
-const SHELL=['./','./index.html','./styles.css','./app.mjs','./core.mjs','./behaviour.mjs','./planner.mjs','./session.mjs','./resources.mjs','./manifest.webmanifest','./icon.svg','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'];
+const CACHE='sukoon-shell-v0.4.1';
+const SHELL=['./','./index.html','./styles.css','./app.mjs','./core.mjs','./behaviour.mjs','./planner.mjs','./session.mjs','./resources.mjs','./manifest.webmanifest','./favicon.ico','./icons/favicon-16.png','./icons/favicon-32.png','./icons/icon-maskable-512.png','./branding/mera-sukoon24-original.png','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'];
 // Install a complete release; open tabs retain their release until closed.
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL))));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('sukoon-shell-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));

@@ -1,10 +1,14 @@
-# Sukoon — Mera-Sukoon24
+# Mera-Sukoon24 — Sukoon
 
 A free, culturally aware self-help app for small practical steps, with a specification for a future AI companion.
 
 ## Project status
 
-Version 0.4.0 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app, live hosting or clinical validation is included.
+Version 0.4.1 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app, live hosting or clinical validation is included.
+
+## Brand assets
+
+The owner-supplied Mera-Sukoon24 artwork is integrated into app-header and welcome-page branding, favicons, PWA icons, a maskable icon and the Apple home-screen icon. The unmodified source is retained at `branding/mera-sukoon24-original.png`. [Asset details](docs/BRANDING.md).
 
 ## Free wellbeing tools
 
@@ -23,7 +27,7 @@ No runtime dependencies, subscriptions, keys, advertisements or paid APIs. No cl
 
 ## Audit and release status
 
-See [architecture and behavioural design audit](docs/AUDIT.md) for findings, evidence, ratings and remaining gaps. Version 0.4.0 passes 34 automated tests, including simulated DOM event tests. These are not real-browser, device, accessibility or clinical certification.
+See [architecture and behavioural design audit](docs/AUDIT.md) for findings, evidence, ratings and remaining gaps. Version 0.4.1 passes 34 automated tests, including simulated DOM event tests. These are not real-browser, device, accessibility or clinical certification.
 
 ## Run and check
 
