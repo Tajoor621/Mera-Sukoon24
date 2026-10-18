@@ -30,3 +30,14 @@ External publisher URLs and non-GET requests are not intercepted or cached. The 
 ## Optional Android wrapper
 
 No TWA APK is produced in this release. First verify the live HTTPS origin and device behaviour. A signed wrapper also needs a signing identity, a matching Digital Asset Links declaration on that origin and build verification. Keep the signing key outside this public repository. A packaged PWA must be described as a PWA packaged for Android, not a native implementation. The pure web path must remain independent of any optional wrapper tooling.
+
+## Verified GitHub deployment evidence — 18 October 2026
+
+Code commit: `89f0d344e28b742e3affb1b54054d0b673b06d21`.
+
+- Custom workflow: https://github.com/Tajoor621/Mera-Sukoon24/actions/runs/39127778876 — completed successfully, including tests, syntax checks, packaging and deploy.
+- Check workflow: https://github.com/Tajoor621/Mera-Sukoon24/actions/runs/39127778883 — completed successfully.
+- Deployment job output confirmed: https://tajoor621.github.io/Mera-Sukoon24/
+- GitHub also ran the legacy branch Pages workflow successfully: https://github.com/Tajoor621/Mera-Sukoon24/actions/runs/39127778935
+
+The GitHub deployment result confirms publication; it does not verify a phone install, screen-reader experience, rendered page or clinical content. Both workflows used the same code commit and target origin. To avoid duplicate future deployment pipelines, the repository owner should select **Settings → Pages → GitHub Actions**. The connected tool could not change this administration setting; its completion is not claimed.

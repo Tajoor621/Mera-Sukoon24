@@ -4,7 +4,7 @@ A free, culturally aware self-help app for small practical steps, with a specifi
 
 ## Project status
 
-Version 0.5.0 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app or clinical validation is included. GitHub Pages is the only deployment target; live deployment and real-device verification must be confirmed separately.
+Version 0.5.0 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app or clinical validation is included. GitHub Pages is the only deployment target; GitHub deployment has succeeded; real-device verification remains pending.
 
 ## Brand assets
 
@@ -39,7 +39,7 @@ No runtime dependencies, subscriptions, keys, advertisements or paid APIs. No cl
 
 ## Audit and release status
 
-See [architecture and behavioural design audit](docs/AUDIT.md) for findings, evidence, ratings and remaining gaps. Version 0.5.0 passes 34 automated tests, including simulated DOM event tests. These are not real-browser, device, accessibility or clinical certification.
+See [architecture and behavioural design audit](docs/AUDIT.md) for findings, evidence, ratings and remaining gaps. Version 0.5.0 passes 52 automated tests, including simulated DOM event tests. These are not real-browser, device, accessibility or clinical certification.
 
 ## Run and check
 
@@ -58,7 +58,7 @@ npm run check
 
 Node 22 or newer is recommended for checks; no installation step is required.
 
-For free GitHub Pages hosting, the repository owner can select **Settings → Pages → GitHub Actions**. The release includes a test-gated Pages workflow. Pages settings and live availability were not verified through the connected tool. Service workers need HTTPS (or localhost). Device/browser installation support varies; no APK is produced.
+For free GitHub Pages hosting, the repository owner can select **Settings → Pages → GitHub Actions**. The release includes a test-gated Pages workflow. GitHub verified successful deployment of v0.5.0; see deployment evidence in `docs/DEPLOYMENT.md`. Select Actions as the Pages source to avoid the observed duplicate legacy branch pipeline. Actual device installation remains unverified. Service workers need HTTPS (or localhost). Device/browser installation support varies; no APK is produced.
 
 See [free resource policy and sources](docs/FREE_RESOURCES.md) and [verification notes](docs/VERIFICATION.md).
 

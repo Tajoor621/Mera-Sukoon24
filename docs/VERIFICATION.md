@@ -1,15 +1,15 @@
-# Verification — v0.4.0
+# Verification — v0.5.0
 
 ## Completed
 
-- `npm test`: 34 automated tests passed.
+- `npm test`: 52 automated tests passed (including the original 34).
 - `npm run check`: syntax checks passed for all runtime JavaScript modules and the service worker.
 - Tests cover resource metadata, topic/language/bookmark filters, urgent routing, professional-support prompts, storage failures, data limits, state round trips, source references, DOM binding IDs and offline asset completeness.
 - Official landing pages reviewed for the curated resources; see FREE_RESOURCES.md for retrieval limits.
 
 ## Limits
 
-No browser automation, real iPhone/Android testing, visual screenshot review, hosting deployment, accessibility audit or clinical validation was performed. Service worker installation, offline reload, keyboard operation, export/download, delete confirmation and mobile layout require browser/device checks before release. Unit checks do not establish clinical effectiveness.
+No browser automation, real iPhone/Android testing, visual screenshot review, real-device accessibility audit or clinical validation was performed. Service worker installation, offline reload, keyboard operation, export/download, delete confirmation and mobile layout require browser/device checks before release. Unit checks do not establish clinical effectiveness.
 
 ## Device review checklist
 
@@ -49,3 +49,7 @@ Not performed: real phones, native installation, standalone mode, real SW lifecy
 The Pages settings API was unavailable through the connector, and the conventional live URL could not be verified via retrieval. A workflow deployment result is required before claiming hosting success. No TWA APK was generated.
 
 Final v0.5.0 local run: **52/52 tests passed**, all JavaScript syntax checks passed, and the static site package built successfully. These include the preserved original 34 test cases. HTML ID/heading references and package exclusions were also checked. No physical or independent review status has changed.
+
+## Final remote release verification
+
+All 46 uploaded repository files matched local hashes after the code release. The master prompt and runtime guidance retained their previous blob hashes. GitHub's check workflow and Pages test/package/deploy workflow both completed successfully for code commit `89f0d344e28b742e3affb1b54054d0b673b06d21`. Deployment evidence and URL are in DEPLOYMENT.md. Earlier notes that live publication was unverified describe the state before that successful workflow, not its final status. Real-device and independent-review gates remain pending.
