@@ -37,3 +37,15 @@ Before release, manually check each form selection, report rendering/reset, safe
 - Syntax checks cover planner.mjs and session.mjs as well as existing modules.
 
 The simulated DOM implements a limited set of browser APIs. It does not prove layout, native form semantics, screen-reader output, service-worker lifecycle, download behaviour or Safari/Android installation. No browser was installed or launched for these checks.
+
+## v0.5.0 evidence update
+
+The original 34 tests remain present. New tests cover critical translations and direction attributes, session preference failure handling, native disclosure/navigation behaviour, optional tour and return focus, semantic result regions, specified contrast ratios, failed SW installation, partial caches, storage failure recovery, external-request exclusion and privacy-minimal cache-health messages. Simulated UI checks also exercise global language switching, tour controls and unavailable update checks.
+
+`npm run check` now checks every project JavaScript file, including new modules and tests. `npm run package:site` builds an allowlisted static artifact. See TEST_RESULTS.txt for the actual automated test run.
+
+Not performed: real phones, native installation, standalone mode, real SW lifecycle, browser screenshots, keyboard/AT sessions, rendered 200% zoom/high contrast, independent language/community review or clinical review. No such test is marked passed. DEVICE_TESTS.md and INDEPENDENT_REVIEW.md hold explicit pending records. ACCESSIBILITY.md records engineering checks, not certification.
+
+The Pages settings API was unavailable through the connector, and the conventional live URL could not be verified via retrieval. A workflow deployment result is required before claiming hosting success. No TWA APK was generated.
+
+Final v0.5.0 local run: **52/52 tests passed**, all JavaScript syntax checks passed, and the static site package built successfully. These include the preserved original 34 test cases. HTML ID/heading references and package exclusions were also checked. No physical or independent review status has changed.

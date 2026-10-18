@@ -1,3 +1,5 @@
+import {applyLanguage,applySelectLanguage,readLanguage,saveLanguage,languageCode,text,annotate} from './i18n.mjs';
+import {configureNavigation} from './navigation.mjs';
 import {behaviourReport} from './behaviour.mjs';
 import {resources,activities} from './resources.mjs';
 import {filterResources,suggest,emptyState,writeState,STORAGE_KEY,localDay} from './core.mjs';
@@ -9,6 +11,19 @@ let storage=null;try{storage=window.localStorage;}catch{/* Session mode remains 
 const initial=openSession(storage);
 let {remember,state}=initial;
 let historyLimit=7;
+let preferenceStorage=null;try{preferenceStorage=window.sessionStorage;}catch{}
+let uiLanguage=readLanguage(preferenceStorage);
+const navigation=configureNavigation(document,window,()=>uiLanguage);
+function focusResult(id,language=uiLanguage){
+ const node=$(id);node.setAttribute('aria-label',text('result-label',language));annotate(node,language);navigation.reveal(id);
+ $('result-status').textContent='';queueMicrotask(()=>{$('result-status').textContent=text('result-ready',language);annotate($('result-status'),language);});
+}
+function setInterfaceLanguage(value){
+ uiLanguage=languageCode(value);saveLanguage(preferenceStorage,uiLanguage);$('ui-language').value=uiLanguage;applyLanguage(document,uiLanguage);applySelectLanguage(document,uiLanguage);
+ $('plan-language').value=uiLanguage;renderPlanOptions();navigation.refreshTour();
+}
+$('ui-language').onchange=()=>setInterfaceLanguage($('ui-language').value);
+
 $('remember').checked=remember;
 function persist(){
  if(!remember){$('storage-status').textContent='Session only. Nothing is saved for the next visit.';return;}
@@ -39,23 +54,23 @@ for(const id of ['search','topic','language','saved-only'])$(id).addEventListene
 $('check-form').onsubmit=e=>{
  e.preventDefault();
  const result=suggest({concern:$('concern').value,ongoing:$('ongoing').checked,interfering:$('interfering').checked,unsafe:$('unsafe').checked});
- const nodes=[el('p',result.message)];
+ const message=uiLanguage==='en'?result.message:text(result.urgent?'safety-message':$('ongoing').checked||$('interfering').checked?'check-followup':'check-normal',uiLanguage);const intro=el('p',message);annotate(intro,uiLanguage);const nodes=[intro];
  if(result.urgent){const a=el('a','Go to human support');a.href='#support';nodes.push(a);}
  else {const grid=el('div',undefined,'grid');grid.append(...result.ids.map(id=>card(resources.find(r=>r.id===id))));nodes.push(grid);}
- $('suggestions').replaceChildren(...nodes);$(result.urgent?'support':'suggestions').focus();
+ $('suggestions').replaceChildren(...nodes);focusResult(result.urgent?'support':'suggestions');
 };
-function sourceList(ids){const list=el('ul');for(const id of ids){const r=resources.find(r=>r.id===id);if(!r)continue;const li=el('li');li.append(external(r.url,r.title+' — '+r.publisher+' ↗'));list.append(li);}return list;}
+function sourceList(ids){const list=el('ul');list.lang='en-GB';list.dir='ltr';for(const id of ids){const r=resources.find(r=>r.id===id);if(!r)continue;const li=el('li');li.append(external(r.url,r.title+' — '+r.publisher+' ↗'));list.append(li);}return list;}
 $('behaviour-form').onsubmit=e=>{
  e.preventDefault();
  const result=behaviourReport({topic:$('behaviour-topic').value,role:$('behaviour-role').value,setting:$('behaviour-setting').value,certainty:$('behaviour-certainty').value,power:$('behaviour-power').checked,repeated:$('behaviour-repeated').checked,impact:$('behaviour-impact').checked,minor:$('behaviour-minor').checked,eating:$('behaviour-eating').checked,unsafe:$('behaviour-unsafe').checked});
- const report=el('article',undefined,'panel');report.append(el('h3',result.title),el('p',result.summary));
+ const report=el('article',undefined,'panel');report.lang='en-GB';report.dir='ltr';if(uiLanguage!=='en'){const intro=el('p',text(result.urgent?'safety-message':'report-summary',uiLanguage));annotate(intro,uiLanguage);report.append(intro);}report.append(el('h3',result.title),el('p',result.summary));
  if(result.actions.length){report.append(el('h4','Your next steps'));const list=el('ol');list.append(...result.actions.map(action=>el('li',action)));report.append(list);}
  for(const section of result.sections){
   const detail=el('details',undefined,'report-detail');if(result.urgent)detail.open=true;
   detail.append(el('summary',section.heading),el('p',section.text));report.append(detail);
  }
  if(result.sources.length){report.append(el('h4','Further reading'),sourceList(result.sources));}
- $('behaviour-report').replaceChildren(report);$(result.urgent?'support':'behaviour-report').focus();
+ $('behaviour-report').replaceChildren(report);focusResult(result.urgent?'support':'behaviour-report');
 };
 $('behaviour-form').onreset=()=>$('behaviour-report').replaceChildren();
 const planLabels={en:['What would help?','Include optional faith-based comfort','I feel unsafe or need urgent help','Make a small plan','Clear plan'],roman:['Kis cheez mein madad chahiye?','Ikhtiyari roohani tasalli shamil karain','Main ghair mehfooz hoon ya foran madad chahiye','Chhota plan banain','Plan saaf karain'],ur:['کس چیز میں مدد چاہیے؟','اختیاری روحانی تسلی شامل کریں','میں غیر محفوظ ہوں یا فوری مدد چاہیے','چھوٹا منصوبہ بنائیں','منصوبہ صاف کریں']};
@@ -73,9 +88,9 @@ $('plan-form').onsubmit=e=>{
  const target=$('plan-result');target.lang=result.lang==='roman'?'ur-Latn':result.lang==='ur'?'ur':'en-GB';target.dir=result.dir;
  const panel=el('article',undefined,'panel');panel.append(el('h3',result.title),el('p',result.intro));
  if(result.actions.length){panel.append(el('h4',result.heading));const list=el('ol');list.append(...result.actions.map(a=>el('li',a)));panel.append(list,el('p',result.followup),el('p',result.question));}
- panel.append(el('p',result.limit,'muted'));if(result.sources.length)panel.append(sourceList(result.sources));target.replaceChildren(panel);target.focus();
+ panel.append(el('p',result.limit,'muted'));if(result.sources.length)panel.append(sourceList(result.sources));target.replaceChildren(panel);focusResult('plan-result',result.lang);
 };
-$('plan-form').onreset=()=>{ $('plan-result').replaceChildren();setTimeout(renderPlanOptions,0); };
+$('plan-form').onreset=()=>{ $('plan-result').replaceChildren();setTimeout(()=>{$('plan-language').value=uiLanguage;renderPlanOptions();},0); };
 let breathTimer=null,deadline=0;
 function stopBreath(message='Paused. You can return whenever you like.'){
  clearInterval(breathTimer);breathTimer=null;$('breath').classList.remove('running');$('breath-start').disabled=false;$('breath-stop').disabled=true;$('breath-status').textContent=message;$('breath-count').textContent='';
@@ -146,8 +161,23 @@ window.addEventListener('storage',event=>{
 const network=()=>{$('offline-status').textContent=navigator.onLine?'':'You appear to be offline. Publisher links need internet access.';};window.addEventListener('online',network);window.addEventListener('offline',network);
 function resume(){if(!document.hidden)renderActivities();else if(breathTimer)stopBreath('Paused while the app was away.');}
 window.addEventListener('focus',resume);document.addEventListener('visibilitychange',resume);
-renderState();renderPlanOptions();network();
+renderState();setInterfaceLanguage(uiLanguage);network();
 $('storage-status').textContent=initial.status==='saved'?'Saved records loaded from this browser.':initial.status==='unreadable'||initial.status==='unavailable'?'Saved data could not be read. Session mode is active; existing stored data has not been overwritten.':'Session only. Nothing is saved for the next visit.';
-if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').then(registration=>{
- const notify=()=>{if(registration.waiting)$('update-status').textContent='A new version is ready. Finish or export unsaved reflections, then close all Sukoon tabs and reopen to update.';};notify();registration.addEventListener('updatefound',()=>{const worker=registration.installing;worker?.addEventListener('statechange',notify);});
-}).catch(()=>{$('offline-status').textContent='Offline caching is unavailable. The tools still work while this page stays open.';});
+let swRegistration=null;
+$('check-update').onclick=async()=>{
+ if(!swRegistration){$('update-status').textContent='Update checks are unavailable. Open this app on its GitHub Pages HTTPS address.';return;}
+ try{await swRegistration.update();if(!swRegistration.waiting)$('update-status').textContent='Update check requested. Keep this session open until any download completes.';}
+ catch{$('update-status').textContent='Could not check for updates. Your current session is still available.';}
+};
+if('serviceWorker'in navigator){
+ navigator.serviceWorker.addEventListener('controllerchange',()=>navigator.serviceWorker.controller?.postMessage({type:'CHECK_CACHE'}));
+ navigator.serviceWorker.addEventListener('message',event=>{
+  if(event.data?.type==='CACHE_STATUS')$('offline-status').textContent=text(event.data.ready?'cache-ready':'cache-incomplete',uiLanguage);
+ });
+ navigator.serviceWorker.register('./sw.js').then(registration=>{
+  swRegistration=registration;
+  const notify=()=>{if(registration.waiting)$('update-status').textContent=text('update-waiting',uiLanguage);};
+  notify();registration.addEventListener('updatefound',()=>{const worker=registration.installing;worker?.addEventListener('statechange',notify);});
+  navigator.serviceWorker.ready.then(()=>navigator.serviceWorker.controller?.postMessage({type:'CHECK_CACHE'})).catch(()=>{});
+ }).catch(()=>{$('offline-status').textContent='Offline caching is unavailable. The tools still work while this page stays open.';});
+}

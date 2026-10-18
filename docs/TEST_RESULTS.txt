@@ -1,0 +1,64 @@
+
+> mera-sukoon24@0.5.0 test
+> node --test tests/*.test.mjs
+
+✔ all planner topics work in three language/script modes with bounded actions and sources (1.289635ms)
+✔ faith comfort is included only when explicitly requested (0.725739ms)
+✔ safety overrides planner topic and faith in every language (0.229484ms)
+✔ planner invalid input falls back without prototype-property lookups (0.263846ms)
+✔ opening unreadable storage does not write or grant saving consent (0.405949ms)
+✔ valid saved consent restores state; removal failures are explicit (0.291727ms)
+✔ backups validate structure, limits and entries before replacing anything (0.438228ms)
+✔ uncertainty and power imbalance are acknowledged without declaring a finding (0.336935ms)
+✔ cache release does not update individual modules from live network (0.428453ms)
+✔ install manifest includes Android and Apple raster sizes (0.388183ms)
+✔ every topic, perspective and setting produces a complete bounded response (1.843517ms)
+✔ threats override all ordinary assessment branches (0.843476ms)
+✔ accountability differs from victim and witness guidance (0.223345ms)
+✔ context and safeguarding flags change relevant guidance (0.324997ms)
+✔ body-only and racism-only reports have relevant readings (0.348784ms)
+✔ invalid selection values cannot inject arbitrary content into reports (0.197807ms)
+✔ current module L is replaced and all thirteen headings remain (0.539039ms)
+✔ catalogue has unique IDs, publisher HTTPS links and review metadata (1.235414ms)
+✔ Urdu filter returns Urdu source without claiming all books are translated (0.97924ms)
+✔ unsafe check-in suppresses reading suggestions even for low mood (0.322664ms)
+✔ persistent or interfering distress includes professional support (0.242484ms)
+✔ malformed and unavailable storage safely fall back (0.600341ms)
+✔ state sanitisation bounds notes, history and valid scores (0.511228ms)
+✔ storage round-trip preserves valid entries and does not store arbitrary fields (0.27325ms)
+✔ activity references resolve and local calendar day uses local date parts (0.402574ms)
+✔ HTML IDs and JavaScript bindings agree; scripts are local; no inline handlers (1.055443ms)
+✔ offline shell assets exist and no external source is precached (0.861182ms)
+✔ critical translations exist in all modes with valid matching HTML targets (1.421253ms)
+✔ language preference is session-only and handles blocked storage (0.390766ms)
+✔ translated labels carry correct script direction and stable control values (0.458809ms)
+✔ progressive disclosure opens anchored tools and expand control retains all tools (0.66617ms)
+✔ tour is optional, bounded, non-modal and restores focus when skipped (0.490827ms)
+✔ semantic result regions, labels, skip target and enhanced controls are present (0.408613ms)
+✔ specified primary text, muted text, button and focus colours meet contrast thresholds (0.587671ms)
+✔ SW installs complete release, activates it and removes only old app caches (8.064059ms)
+✔ failed shell install leaves older release and removes partial new cache (1.149595ms)
+✔ incomplete core cache provides readable recovery instead of broken navigation (2.30543ms)
+✔ storage failure serves recovery without deleting user data (0.771287ms)
+✔ external publishers, unrelated URLs and POST requests are never intercepted (2.403567ms)
+✔ cache health reply contains only status and no personal inputs (2.821754ms)
+✔ startup module failure reveals a static readable error without clearing storage (3.85159ms)
+✔ UI starts in session mode and unreadable state is never silently overwritten (9.845043ms)
+✔ journal opt-in, hidden notes, restore and individual deletion use real event handlers (20.248923ms)
+✔ bookmark state synchronises cards in both recommendation and library areas (3.482505ms)
+✔ failed deletion keeps saving toggle truthful (2.929847ms)
+✔ planner generates Urdu RTL and safety text without faith unless opted in (3.079501ms)
+✔ behavioural report handles uncertainty and focuses result; urgent focuses support (2.924668ms)
+✔ cross-tab clear removes visible sensitive content and stops remembering (8.675508ms)
+✔ global language switch translates critical labels without enabling local note saving (3.081003ms)
+✔ tour can be skipped while every tool remains available (2.570517ms)
+✔ update controls fail honestly when no service worker is available (3.692971ms)
+✔ waiting SW update is non-blocking and health messages never include personal choices (3.850829ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 156.591709

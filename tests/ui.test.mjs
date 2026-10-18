@@ -1,7 +1,7 @@
 // Simulated DOM event tests. These exercise application code, not browser layout.
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {STORAGE_KEY} from '../core.mjs';
 let generation=0;
-async function boot(seed=null,{denyRemove=false}={}){
+async function boot(seed=null,{denyRemove=false,serviceWorker=null}={}){
  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),ids=new Map(),events=new Map(),store=new Map(seed===null?[]:[[STORAGE_KEY,seed]]);let focused='';
  class Element{
   constructor(tag='div'){this.tagName=tag;this.children=[];this.dataset={};this.attributes={};this.checked=false;this.disabled=false;this.hidden=false;this.value='';this.files=[];this._text='';const set=new Set();this.classList={add:x=>set.add(x),remove:x=>set.delete(x)};}
@@ -12,7 +12,7 @@ async function boot(seed=null,{denyRemove=false}={}){
   setCustomValidity(v){this.validityMessage=v;}reportValidity(){}click(){this.onclick?.({preventDefault(){}});}remove(){}
   reset(){for(const n of this.fields??[]){n.value=n.defaultValue??'';n.checked=false;}this.onreset?.();}
  }
- for(const m of html.matchAll(/<([a-z]+)\b[^>]*\bid="([^"]+)"[^>]*>/g)){const n=new Element(m[1]);n.id=m[2];n.hidden=m[0].includes(' hidden');ids.set(n.id,n);}
+ for(const m of html.matchAll(/<([a-z][a-z0-9]*)\b[^>]*\bid="([^"]+)"[^>]*>/g)){const n=new Element(m[1]);n.id=m[2];n.hidden=m[0].includes(' hidden');ids.set(n.id,n);}
  for(const m of html.matchAll(/<select\b[^>]*\bid="([^"]+)"[^>]*>([\s\S]*?)<\/select>/g)){const option=m[2].match(/<option(?: value="([^"]*)")?[^>]*>([^<]*)/);if(option){ids.get(m[1]).value=option[1]??option[2];ids.get(m[1]).hasInitialOption=true;}}
  for(const n of ids.values())n.defaultValue=n.value;
  for(const m of html.matchAll(/<form[^>]*id="([^"]+)"[^>]*>([\s\S]*?)<\/form>/g))ids.get(m[1]).fields=[...m[2].matchAll(/\bid="([^"]+)"/g)].map(x=>ids.get(x[1])).filter(Boolean);
@@ -20,7 +20,7 @@ async function boot(seed=null,{denyRemove=false}={}){
  globalThis.document={getElementById:id=>{assert.ok(ids.has(id),id);return ids.get(id);},createElement:tag=>new Element(tag),body:new Element('body'),hidden:false,addEventListener:(k,f)=>events.set('document:'+k,f),querySelectorAll:selector=>{assert.equal(selector,'[data-bookmark]');return [...new Set([...ids.values()].flatMap(walk))].filter(n=>n.dataset.bookmark);}};
  const storage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v),removeItem:k=>{if(denyRemove)throw Error('denied');store.delete(k);}};
  globalThis.window={localStorage:storage,addEventListener:(k,f)=>events.set(k,f)};
- Object.defineProperty(globalThis,'navigator',{value:{onLine:true},configurable:true});
+ Object.defineProperty(globalThis,'navigator',{value:{onLine:true,...(serviceWorker?{serviceWorker}:{})},configurable:true});
  globalThis.Option=class extends Element{constructor(text,value){super('option');this.textContent=text;this.value=value??text;}};
  globalThis.confirm=()=>true;
  await import('../app.mjs?ui='+generation++);
@@ -33,3 +33,9 @@ test('failed deletion keeps saving toggle truthful',async()=>{const saved=JSON.s
 test('planner generates Urdu RTL and safety text without faith unless opted in',async()=>{const e=await boot();e.ids.get('plan-language').value='ur';e.ids.get('plan-language').onchange();e.submit('plan-form');assert.equal(e.ids.get('plan-result').dir,'rtl');assert.equal(e.focused(),'plan-result');e.ids.get('plan-unsafe').checked=true;e.submit('plan-form');assert.match(e.ids.get('plan-result').textContent,/فوری خطرہ/);});
 test('behavioural report handles uncertainty and focuses result; urgent focuses support',async()=>{const e=await boot();e.ids.get('behaviour-certainty').value='unsure';e.submit('behaviour-form');assert.match(e.ids.get('behaviour-report').textContent,/cannot determine/);assert.equal(e.focused(),'behaviour-report');e.ids.get('behaviour-unsafe').checked=true;e.submit('behaviour-form');assert.equal(e.focused(),'support');});
 test('cross-tab clear removes visible sensitive content and stops remembering',async()=>{const e=await boot();e.ids.get('mood').value='4';e.ids.get('note').value='private';e.submit('journal');e.events.get('storage')({key:STORAGE_KEY,newValue:null});assert.equal(e.ids.get('history').children.length,0);assert.equal(e.ids.get('remember').checked,false);assert.match(e.ids.get('storage-status').textContent,/another tab/);await new Promise(resolve=>setTimeout(resolve,5));});
+
+test('global language switch translates critical labels without enabling local note saving',async()=>{const e=await boot();e.ids.get('ui-language').value='ur';e.ids.get('ui-language').onchange();assert.equal(e.ids.get('label-unsafe').dir,'rtl');assert.equal(e.ids.get('plan-language').value,'ur');assert.equal(e.ids.get('remember').checked,false);assert.equal(e.store.has(STORAGE_KEY),false);e.submit('check-form');assert.match(e.ids.get('suggestions').textContent,/تجاویز/);await new Promise(resolve=>setTimeout(resolve,0));assert.match(e.ids.get('result-status').textContent,/تیار/);});
+test('tour can be skipped while every tool remains available',async()=>{const e=await boot();assert.equal(e.ids.get('panel-reflect').open,false);e.ids.get('tour-start').onclick();assert.equal(e.ids.get('tour').hidden,false);e.ids.get('tour-dismiss').onclick();assert.equal(e.ids.get('tour').hidden,true);assert.equal(e.focused(),'tour-start');e.ids.get('expand-tools').checked=true;e.ids.get('expand-tools').onchange();assert.equal(e.ids.get('panel-reflect').open,true);});
+test('update controls fail honestly when no service worker is available',async()=>{const e=await boot();await e.ids.get('check-update').onclick();assert.match(e.ids.get('update-status').textContent,/unavailable/);});
+
+test('waiting SW update is non-blocking and health messages never include personal choices',async()=>{const listeners=new Map(),messages=[];const registration={waiting:{},addEventListener(){},async update(){}};const worker={addEventListener:(k,fn)=>listeners.set(k,fn),register:async()=>registration,ready:Promise.resolve(),controller:{postMessage:m=>messages.push(m)}};const e=await boot(null,{serviceWorker:worker});await new Promise(resolve=>setTimeout(resolve,0));assert.match(e.ids.get('update-status').textContent,/close all Sukoon tabs/);assert.equal(e.ids.get('journal').hidden,false);assert.deepEqual(messages,[{type:'CHECK_CACHE'}]);listeners.get('message')({data:{type:'CACHE_STATUS',ready:false}});assert.match(e.ids.get('offline-status').textContent,/offline files are missing/);});

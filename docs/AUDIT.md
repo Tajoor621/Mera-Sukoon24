@@ -72,3 +72,11 @@ No real browser, screenshot review, screen-reader session, accessibility conform
 - Resource publishers and review limits: FREE_RESOURCES.md
 
 The audit does not certify 10/10 readiness. The appropriate next milestone is verified real-world usability and independent content review, not a higher self-awarded score.
+
+## v0.5.0 implementation update (18 October 2026)
+
+The release addresses code-level parts of the improvement brief: progressive disclosure and optional tour; critical UI localisation with session preference; named/announced result regions; focus/contrast/forced-colour improvements; cache-health and incomplete-cache recovery; and test-gated GitHub Pages packaging. The master prompt and runtime guidance were deliberately left unchanged.
+
+Evidence is separated from planned review: see ACCESSIBILITY.md, DEVICE_TESTS.md, INDEPENDENT_REVIEW.md and DEPLOYMENT.md. Translations remain AI-drafted and have not been independently reviewed. No clinician, community participant, phone or assistive-technology session was available. There are no fabricated passes, screenshots or review signatures. The core tests remain and the suite is extended; TEST_RESULTS.txt records the run.
+
+The previous provisional 7/10 code/content-readiness judgement is not upgraded to 10/10 or clinical approval. Version 0.5.0 remains pre-production because critical independent verification gates remain open.

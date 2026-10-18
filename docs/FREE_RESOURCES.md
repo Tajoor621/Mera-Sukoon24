@@ -70,3 +70,9 @@ The next-step planner provides original, short educational prompts for stress, l
 Reflection text is hidden by default on screen, not encrypted or removed from browser memory. Users can reveal it, see older entries, delete individual records and restore a validated export with confirmation. Restoring replaces the records; it does not merge them. Removing saved data in another same-origin tab clears this tab as well. Browser data can still be exposed by a shared device or browser backups.
 
 Offline assets now remain within one installed release. A waiting update asks users to finish/export their session, close all Sukoon tabs and reopen; it does not force a reload during a reflection. Publishers' books are still not cached.
+
+## v0.5.0 scope and preference update
+
+No publishers, clinical responses, planner content or domain prompts were replaced. Critical UI labels, options, safety messages and short result summaries have draft Urdu/Roman Urdu translations; detailed reading and behavioural explanations remain English. SessionStorage stores only the selected interface-language code when available, never reflections or form choices. Notes retain the existing session-memory/localStorage opt-in model.
+
+The optional tour stores no participation record. Cache-health and update messages contain no notes or choices. Recovery never clears saved notes. Publisher pages and books still need connectivity. Independent clinical, language and community reviews remain pending; see INDEPENDENT_REVIEW.md.

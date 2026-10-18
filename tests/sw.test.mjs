@@ -1,0 +1,21 @@
+// VM lifecycle/fetch tests are not a substitute for a real browser SW lifecycle.
+import test from 'node:test';import assert from 'node:assert/strict';import vm from 'node:vm';import {readFileSync} from 'node:fs';
+const source=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
+const base='https://example.test/Mera-Sukoon24/';
+function harness({failInstall=false,failOpen=false}={}){
+ const handlers={},stores=new Map([['sukoon-shell-v0.4.1',new Map()]]);let claimed=false;
+ const caches={async open(name){if(failOpen)throw Error('storage unavailable');if(!stores.has(name))stores.set(name,new Map());const store=stores.get(name);return {async addAll(paths){if(failInstall)throw Error('download failed');for(const p of paths)store.set(new URL(p,base).href,'cached '+p);},async match(url){return store.has(url)?new Response(store.get(url)):undefined;}};},async keys(){return [...stores.keys()];},async delete(name){return stores.delete(name);}};
+ const self={registration:{scope:base},clients:{async claim(){claimed=true;}},addEventListener:(type,fn)=>handlers[type]=fn};
+ vm.runInNewContext(source,{self,caches,Response,URL,Promise,fetch(){throw Error('Unexpected live network fetch');}});
+ const event=async(type,extra={})=>{let waiting;handlers[type]({...extra,waitUntil:p=>waiting=p});if(waiting)await waiting;};
+ const fetch=async(url,mode='navigate',method='GET')=>{let result;handlers.fetch({request:{url,mode,method},respondWith:p=>result=p});return result?await result:null;};
+ return {event,fetch,stores,claimed:()=>claimed};
+}
+test('SW installs complete release, activates it and removes only old app caches',async()=>{const h=harness();h.stores.set('unrelated-cache',new Map());await h.event('install');await h.event('activate');assert.equal(h.claimed(),true);assert.ok(h.stores.has('sukoon-shell-v0.5.0'));assert.equal(h.stores.has('sukoon-shell-v0.4.1'),false);assert.ok(h.stores.has('unrelated-cache'));assert.equal((await h.fetch(base)).status,200);});
+test('failed shell install leaves older release and removes partial new cache',async()=>{const h=harness({failInstall:true});await assert.rejects(h.event('install'));assert.ok(h.stores.has('sukoon-shell-v0.4.1'));assert.equal(h.stores.has('sukoon-shell-v0.5.0'),false);});
+test('incomplete core cache provides readable recovery instead of broken navigation',async()=>{const h=harness();await h.event('install');h.stores.get('sukoon-shell-v0.5.0').delete(base+'planner.mjs');const response=await h.fetch(base);assert.equal(response.status,503);assert.match(await response.text(),/Do not clear site data/);const module=await h.fetch(base+'planner.mjs','cors');assert.equal(module.status,503);});
+test('storage failure serves recovery without deleting user data',async()=>{const h=harness({failOpen:true});const r=await h.fetch(base);assert.equal(r.status,503);assert.match(await r.text(),/saved records have not been intentionally deleted/);});
+test('external publishers, unrelated URLs and POST requests are never intercepted',async()=>{const h=harness();assert.equal(await h.fetch('https://www.who.int/book'),null);assert.equal(await h.fetch(base+'unrelated.json'),null);assert.equal(await h.fetch(base,'navigate','POST'),null);});
+test('cache health reply contains only status and no personal inputs',async()=>{const h=harness();await h.event('install');let reply;await h.event('message',{data:{type:'CHECK_CACHE'},source:{postMessage:message=>reply=message}});assert.equal(reply.ready,true);assert.deepEqual(Object.keys(reply),['type','ready']);h.stores.get('sukoon-shell-v0.5.0').delete(base+'styles.css');await h.event('message',{data:{type:'CHECK_CACHE'},source:{postMessage:message=>reply=message}});assert.equal(reply.ready,false);});
+
+test('startup module failure reveals a static readable error without clearing storage',async()=>{const code=readFileSync(new URL('../bootstrap.mjs',import.meta.url),'utf8');const node={hidden:true,focus(){this.focused=true;}};vm.runInNewContext(code.replace("import('./app.mjs')","Promise.reject(new Error('missing module'))"),{Promise,Error,document:{getElementById:id=>{assert.equal(id,'startup-error');return node;}}});await new Promise(resolve=>setTimeout(resolve,0));assert.equal(node.hidden,false);assert.equal(node.focused,true);assert.doesNotMatch(code,/localStorage|reload\(/);});
