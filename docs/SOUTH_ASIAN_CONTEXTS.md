@@ -46,3 +46,5 @@ These sources inform general framing; they do not endorse or validate the specif
 ## Verification
 
 New automated checks cover all 16 contexts across 13 domains and three response modes, invalid context fallback, urgent overrides, opt-in faith, safeguarding, module offline inclusion, rendered selection/reset and rendered mediation suppression. Actual CI evidence is recorded in VERIFICATION.md after execution. Real-device, assistive-technology and independent review are not replaced by these tests.
+
+Executed candidate CI: **73 tests passed, 0 failed; syntax checks passed**. [Run evidence](https://github.com/Tajoor621/Mera-Sukoon24/actions/runs/39458154714). The context/domain/mode matrix covers 624 combinations. See VERIFICATION.md for the exact code commit and pending review limits.

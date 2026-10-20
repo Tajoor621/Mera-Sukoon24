@@ -63,3 +63,9 @@ This iteration used GitHub CI because no local execution environment was availab
 ## v0.7.0 context expansion — verification scope
 
 New tests exercise sixteen situations across thirteen domains and three response styles, while preserving all existing tests. Additional cases cover safety-sensitive contexts, urgent overrides, universal fallback, faith opt-in, module caching and real application handlers in the simulated DOM. GitHub CI is the execution environment for this iteration; final evidence will be recorded below after completion. Device, screen-reader, cultural, translation and clinical review remain pending.
+
+### v0.7.0 executed CI evidence — 20 October 2026
+
+Code commit: `e0b27f1ad8941305fd5f66661681aefa6b1229a2`. Candidate [GitHub CI run](https://github.com/Tajoor621/Mera-Sukoon24/actions/runs/39458154714), job 118750315890: **73 tests passed, 0 failed**, and all JavaScript syntax checks passed. This includes the previous 63 tests and 10 new context/UI cases. One new matrix case exercises all 624 combinations of 16 contexts × 13 domains × 3 modes.
+
+The locked master prompt retained blob `f54471fee622cff48013d45c126a3a750e1a50ba`; runtime guidance retained blob `2b452ce17016047d070dbc13bd046c24b67e6a2c`. No independent or physical-device review is claimed. The main Pages workflow tests and packages the complete offline shell, including contexts.mjs, before deployment.
