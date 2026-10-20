@@ -1,3 +1,4 @@
+import {consultation,domains,domainForResource} from './consultations.mjs';
 import {applyLanguage,applySelectLanguage,readLanguage,saveLanguage,languageCode,text,annotate} from './i18n.mjs';
 import {configureNavigation} from './navigation.mjs';
 import {behaviourReport} from './behaviour.mjs';
@@ -36,9 +37,38 @@ function updateBookmarks(){
   b.textContent=selected?'Bookmarked ✓':'Bookmark';b.setAttribute('aria-pressed',String(selected));
  }
 }
+function renderConsultation(result){
+ const article=el('article',undefined,'panel');article.lang='en-GB';article.dir='ltr';
+ article.append(el('h3',result.title),el('p',result.intro));
+ for(const section of result.sections){article.append(el('h4',section.heading));for(const paragraph of section.paragraphs)article.append(el('p',paragraph));}
+ if(result.actions.length){article.append(el('h4','Four practical next steps'));const list=el('ol');list.append(...result.actions.map(action=>el('li',action)));article.append(list);}
+ if(result.question)article.append(el('h4','A question to reflect on'),el('p',result.question));
+ article.append(el('p',result.scope,'muted'));return article;
+}
+function openConsultation(domain,topic=''){
+ $('consult-domain').value=domain;
+ const result=consultation({domain,topic,mode:'advice'});
+ $('consult-result').replaceChildren(renderConsultation(result));
+ focusResult('consult-result');
+}
+for(const domain of domains)$('consult-domain').append(new Option(domain.title,domain.id));
+$('consult-form').onsubmit=event=>{
+ event.preventDefault();
+ const result=consultation({domain:$('consult-domain').value,mode:$('consult-mode').value,ongoing:$('consult-ongoing').checked,coercion:$('consult-coercion').checked,minor:$('consult-minor').checked,unsafe:$('consult-unsafe').checked,medical:$('consult-medical').checked,faith:$('consult-faith').checked});
+ $('consult-result').replaceChildren(renderConsultation(result));focusResult(result.urgent?'support':'consult-result');
+};
+$('consult-form').onreset=()=>$('consult-result').replaceChildren();
+function internalReading(r){
+ const button=el('button','Read guidance in Sukoon','secondary');
+ button.onclick=()=>openConsultation(domainForResource(r),r.tags.find(t=>['sleep','worry','low mood','motivation','self-kindness','connection'].includes(t))||'');
+ return button;
+}
+function optionalPublisher(r){
+ const detail=el('details');detail.append(el('summary','Original publisher — optional'),external(r.url,'Open publisher page ↗'));return detail;
+}
 function card(r){
  const a=el('article',undefined,'panel card');
- a.append(el('small',r.publisher+' · '+r.format),el('h3',r.title),el('p',r.description),el('small',r.languages.join(' / ')+' · Free access · Page reviewed '+r.reviewed),external(r.url,'Read / find downloads ↗'));
+ a.append(el('small',r.publisher+' · '+r.format),el('h3',r.title),el('p',r.description),el('small',r.languages.join(' / ')+' · Free access · Page reviewed '+r.reviewed),internalReading(r),optionalPublisher(r));
  const b=el('button',state.saved.includes(r.id)?'Bookmarked ✓':'Bookmark','secondary');
  b.dataset.bookmark=r.id;b.setAttribute('aria-pressed',String(state.saved.includes(r.id)));b.setAttribute('aria-label','Bookmark '+r.title);
  b.onclick=()=>{state.saved=state.saved.includes(r.id)?state.saved.filter(x=>x!==r.id):[...state.saved,r.id];persist();updateBookmarks();if($('saved-only').checked){renderResources();$('result-count').tabIndex=-1;$('result-count').focus();}};
@@ -47,7 +77,7 @@ function card(r){
 function renderResources(){
  const list=filterResources({query:$('search').value,topic:$('topic').value,language:$('language').value,savedOnly:$('saved-only').checked,saved:state.saved});
  $('resources').replaceChildren(...list.map(card));
- $('result-count').textContent=list.length?list.length+' resources. External pages need an internet connection.':'No matching resources. Try clearing a filter.';
+ $('result-count').textContent=list.length?list.length+' resources. Guidance is available inside Sukoon; original publisher pages are optional.':'No matching resources. Try clearing a filter.';
 }
 for(const tag of [...new Set(resources.flatMap(r=>r.tags))].sort())$('topic').append(new Option(tag,tag));
 for(const id of ['search','topic','language','saved-only'])$(id).addEventListener('input',renderResources);
@@ -56,10 +86,10 @@ $('check-form').onsubmit=e=>{
  const result=suggest({concern:$('concern').value,ongoing:$('ongoing').checked,interfering:$('interfering').checked,unsafe:$('unsafe').checked});
  const message=uiLanguage==='en'?result.message:text(result.urgent?'safety-message':$('ongoing').checked||$('interfering').checked?'check-followup':'check-normal',uiLanguage);const intro=el('p',message);annotate(intro,uiLanguage);const nodes=[intro];
  if(result.urgent){const a=el('a','Go to human support');a.href='#support';nodes.push(a);}
- else {const grid=el('div',undefined,'grid');grid.append(...result.ids.map(id=>card(resources.find(r=>r.id===id))));nodes.push(grid);}
+ else {nodes.push(renderConsultation(consultation({domain:$('concern').value==='connection'?'social':'emotions',topic:$('concern').value,ongoing:$('ongoing').checked||$('interfering').checked})));const grid=el('div',undefined,'grid');grid.append(...result.ids.map(id=>card(resources.find(r=>r.id===id))));nodes.push(grid);}
  $('suggestions').replaceChildren(...nodes);focusResult(result.urgent?'support':'suggestions');
 };
-function sourceList(ids){const list=el('ul');list.lang='en-GB';list.dir='ltr';for(const id of ids){const r=resources.find(r=>r.id===id);if(!r)continue;const li=el('li');li.append(external(r.url,r.title+' — '+r.publisher+' ↗'));list.append(li);}return list;}
+function sourceList(ids){const list=el('ul');list.lang='en-GB';list.dir='ltr';for(const id of ids){const r=resources.find(r=>r.id===id);if(!r)continue;const li=el('li');li.append(el('span',r.title+' — '+r.publisher+' '),internalReading(r),optionalPublisher(r));list.append(li);}return list;}
 $('behaviour-form').onsubmit=e=>{
  e.preventDefault();
  const result=behaviourReport({topic:$('behaviour-topic').value,role:$('behaviour-role').value,setting:$('behaviour-setting').value,certainty:$('behaviour-certainty').value,power:$('behaviour-power').checked,repeated:$('behaviour-repeated').checked,impact:$('behaviour-impact').checked,minor:$('behaviour-minor').checked,eating:$('behaviour-eating').checked,unsafe:$('behaviour-unsafe').checked});
@@ -88,7 +118,7 @@ $('plan-form').onsubmit=e=>{
  const target=$('plan-result');target.lang=result.lang==='roman'?'ur-Latn':result.lang==='ur'?'ur':'en-GB';target.dir=result.dir;
  const panel=el('article',undefined,'panel');panel.append(el('h3',result.title),el('p',result.intro));
  if(result.actions.length){panel.append(el('h4',result.heading));const list=el('ol');list.append(...result.actions.map(a=>el('li',a)));panel.append(list,el('p',result.followup),el('p',result.question));}
- panel.append(el('p',result.limit,'muted'));if(result.sources.length)panel.append(sourceList(result.sources));target.replaceChildren(panel);focusResult('plan-result',result.lang);
+ panel.append(el('p',result.limit,'muted'));if(!result.urgent)panel.append(renderConsultation(consultation({domain:$('plan-topic').value==='connection'?'social':'emotions',topic:({'mood':'low mood','kindness':'self-kindness','stress':'worry'})[$('plan-topic').value]||$('plan-topic').value,faith:$('plan-faith').checked})));if(result.sources.length)panel.append(sourceList(result.sources));target.replaceChildren(panel);focusResult('plan-result',result.lang);
 };
 $('plan-form').onreset=()=>{ $('plan-result').replaceChildren();setTimeout(()=>{$('plan-language').value=uiLanguage;renderPlanOptions();},0); };
 let breathTimer=null,deadline=0;
@@ -108,7 +138,7 @@ function renderActivities(){
   const n=el('article',undefined,'panel card'),key=today+':'+a.id,complete=state.done.includes(key);
   const b=el('button',complete?'Done for today ✓':'Mark done','secondary');b.setAttribute('aria-pressed',String(complete));
   b.onclick=()=>{state.done=complete?state.done.filter(x=>x!==key):[...state.done,key].slice(-540);persist();renderActivities();};
-  n.append(el('h3',a.label),el('p',a.text),external(resources.find(r=>r.id===a.source).url,'Why this may help ↗'),b);return n;
+  n.append(el('h3',a.label),el('p',a.text),internalReading(resources.find(r=>r.id===a.source)),b);return n;
  }));
 }
 function renderHistory(){
@@ -145,7 +175,7 @@ $('restore-file').onchange=async()=>{
  finally{$('restore-file').value='';}
 };
 function clearVisible(){
- $('behaviour-form').reset();$('plan-form').reset();$('check-form').reset();$('suggestions').replaceChildren();$('note').value='';$('mood').value='';$('mood').setCustomValidity('');$('show-notes').checked=false;$('saved-only').checked=false;$('journal-status').textContent='';historyLimit=7;groundIndex=0;renderGround();stopBreath();
+ $('consult-form').reset();$('behaviour-form').reset();$('plan-form').reset();$('check-form').reset();$('suggestions').replaceChildren();$('note').value='';$('mood').value='';$('mood').setCustomValidity('');$('show-notes').checked=false;$('saved-only').checked=false;$('journal-status').textContent='';historyLimit=7;groundIndex=0;renderGround();stopBreath();
 }
 function renderState(){renderResources();renderHistory();renderActivities();updateBookmarks();}
 $('erase').onclick=()=>{

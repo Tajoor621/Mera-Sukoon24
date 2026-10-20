@@ -4,7 +4,17 @@ A free, culturally aware self-help app for small practical steps, with a specifi
 
 ## Project status
 
-Version 0.5.0 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app or clinical validation is included. GitHub Pages is the only deployment target; GitHub deployment has succeeded; real-device verification remains pending.
+Version 0.6.0 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app or clinical validation is included. GitHub Pages is the only deployment target; GitHub deployment has succeeded; real-device verification remains pending.
+
+## Complete guidance inside the app
+
+- A dedicated thirteen-domain consultation screen provides complete starting explanations, four practical steps, adaptable scripts and reflection questions.
+- Advice and voluntary mediation outlines are displayed in-app; safety/coercion/minor flags restrict unsuitable joint discussions.
+- Check-in and planner results now include substantial built-in guidance.
+- Library cards open Sukoon guidance first. Publisher originals remain optional secondary links.
+- The original pre-written guidance is available offline after the initial successful visit, with no paid API, AI backend or server storage of choices.
+
+Detailed new responses are English, not yet independently clinically reviewed, and cannot guarantee accuracy for every personal situation. [Scope, privacy and sources](docs/IN_APP_GUIDANCE.md).
 
 ## Brand assets
 

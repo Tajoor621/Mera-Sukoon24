@@ -1,7 +1,7 @@
 import {text} from './i18n.mjs';
 export const secondaryTools=['checkin','behaviour','library','steps','reflect'];
 export function openTool(document,id){
- const groups={'suggestions':'checkin','behaviour-report':'behaviour','history':'reflect','journal':'reflect'};
+ const groups={'consult-result':'consultation','suggestions':'checkin','behaviour-report':'behaviour','history':'reflect','journal':'reflect'};
  const key=groups[id]||id;
  if(secondaryTools.includes(key)){const panel=document.getElementById('panel-'+key);if(panel)panel.open=true;}
  const target=document.getElementById(id);if(target){target.tabIndex=-1;target.focus();}return target;
@@ -9,7 +9,7 @@ export function openTool(document,id){
 export function configureNavigation(document,window,getLanguage){
  const $=id=>document.getElementById(id);
  for(const id of secondaryTools)$('panel-'+id).open=false;
- function followHash(){const id=window.location?.hash?.slice(1);if(id&&['main','planner','checkin','behaviour','library','calm','steps','reflect','privacy','support','device-help'].includes(id))openTool(document,id);}
+ function followHash(){const id=window.location?.hash?.slice(1);if(id&&['main','consultation','planner','checkin','behaviour','library','calm','steps','reflect','privacy','support','device-help'].includes(id))openTool(document,id);}
  window.addEventListener('hashchange',followHash);followHash();
  document.addEventListener('click',event=>{const anchor=event.target?.closest?.('a[href^="#"]');if(anchor){const id=anchor.getAttribute('href').slice(1);if(id)openTool(document,id);}});
  $('expand-tools').onchange=()=>{for(const id of secondaryTools)$('panel-'+id).open=$('expand-tools').checked;};
