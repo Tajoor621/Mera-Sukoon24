@@ -1,3 +1,4 @@
+import {contexts} from './contexts.mjs';
 import {consultation,domains,domainForResource} from './consultations.mjs';
 import {applyLanguage,applySelectLanguage,readLanguage,saveLanguage,languageCode,text,annotate} from './i18n.mjs';
 import {configureNavigation} from './navigation.mjs';
@@ -47,14 +48,16 @@ function renderConsultation(result){
 }
 function openConsultation(domain,topic=''){
  $('consult-domain').value=domain;
+ $('consult-context').value='';
  const result=consultation({domain,topic,mode:'advice'});
  $('consult-result').replaceChildren(renderConsultation(result));
  focusResult('consult-result');
 }
+for(const context of contexts)$('consult-context').append(new Option(context.title,context.id));
 for(const domain of domains)$('consult-domain').append(new Option(domain.title,domain.id));
 $('consult-form').onsubmit=event=>{
  event.preventDefault();
- const result=consultation({domain:$('consult-domain').value,mode:$('consult-mode').value,ongoing:$('consult-ongoing').checked,coercion:$('consult-coercion').checked,minor:$('consult-minor').checked,unsafe:$('consult-unsafe').checked,medical:$('consult-medical').checked,faith:$('consult-faith').checked});
+ const result=consultation({domain:$('consult-domain').value,mode:$('consult-mode').value,context:$('consult-context').value,ongoing:$('consult-ongoing').checked,coercion:$('consult-coercion').checked,minor:$('consult-minor').checked,unsafe:$('consult-unsafe').checked,medical:$('consult-medical').checked,faith:$('consult-faith').checked});
  $('consult-result').replaceChildren(renderConsultation(result));focusResult(result.urgent?'support':'consult-result');
 };
 $('consult-form').onreset=()=>$('consult-result').replaceChildren();

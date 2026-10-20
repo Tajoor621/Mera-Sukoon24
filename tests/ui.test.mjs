@@ -43,3 +43,25 @@ test('waiting SW update is non-blocking and health messages never include person
 test('in-app consultation renders a full response and never saves form choices',async()=>{const e=await boot();e.ids.get('consult-domain').value='relationships';e.ids.get('consult-mode').value='both';e.submit('consult-form');const report=e.ids.get('consult-result').textContent;assert.match(report,/Understanding the situation/);assert.match(report,/A voluntary discussion structure/);assert.match(report,/Four practical next steps/);assert.equal(e.focused(),'consult-result');assert.equal(e.store.has(STORAGE_KEY),false);});
 test('check-in and library provide substantive guidance inside Sukoon',async()=>{const e=await boot();e.submit('check-form');assert.match(e.ids.get('suggestions').textContent,/Four practical next steps/);const button=e.all().find(n=>n.tagName==='button'&&n.textContent==='Read guidance in Sukoon');assert.ok(button);button.click();assert.match(e.ids.get('consult-result').textContent,/Understanding the situation/);assert.equal(e.focused(),'consult-result');});
 test('consultation safety override suppresses mediation and focuses human support',async()=>{const e=await boot();e.ids.get('consult-domain').value='relationships';e.ids.get('consult-mode').value='mediation';e.ids.get('consult-unsafe').checked=true;e.submit('consult-form');assert.equal(e.focused(),'support');assert.doesNotMatch(e.ids.get('consult-result').textContent,/A voluntary discussion structure/);assert.match(e.ids.get('consult-result').textContent,/Immediate support/);});
+
+test('optional context selection changes in-app guidance and reset restores universal choice',async()=>{
+ const e=await boot();assert.equal(e.ids.get('consult-context').value,'');
+ e.ids.get('consult-context').value='remittances';e.submit('consult-form');
+ assert.match(e.ids.get('consult-result').textContent,/Remittances, breadwinner guilt/);
+ assert.match(e.ids.get('consult-result').textContent,/essential housing, food, health/);
+ assert.equal(e.focused(),'consult-result');assert.equal(e.store.has(STORAGE_KEY),false);
+ e.ids.get('consult-form').reset();assert.equal(e.ids.get('consult-context').value,'');
+ assert.equal(e.ids.get('consult-result').textContent,'');
+});
+test('unsafe cultural context prevents mediation in the rendered app response',async()=>{
+ const e=await boot();e.ids.get('consult-domain').value='social';e.ids.get('consult-context').value='marriage-choice';e.ids.get('consult-mode').value='both';e.submit('consult-form');
+ assert.match(e.ids.get('consult-result').textContent,/Why joint mediation is not offered here/);
+ assert.doesNotMatch(e.ids.get('consult-result').textContent,/A voluntary discussion structure/);
+});
+
+test('library guidance returns the optional context to universal instead of showing stale context',async()=>{
+ const e=await boot();e.ids.get('consult-context').value='joint-family';
+ const button=e.all().find(n=>n.tagName==='button'&&n.textContent==='Read guidance in Sukoon');button.click();
+ assert.equal(e.ids.get('consult-context').value,'');
+ assert.doesNotMatch(e.ids.get('consult-result').textContent,/Your selected context:/);
+});

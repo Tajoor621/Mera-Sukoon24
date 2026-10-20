@@ -4,7 +4,7 @@ A free, culturally aware self-help app for small practical steps, with a specifi
 
 ## Project status
 
-Version 0.6.0 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app or clinical validation is included. GitHub Pages is the only deployment target; GitHub deployment has succeeded; real-device verification remains pending.
+Version 0.7.0 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app or clinical validation is included. GitHub Pages is the only deployment target; GitHub deployment has succeeded; real-device verification remains pending.
 
 ## Complete guidance inside the app
 
@@ -117,3 +117,9 @@ No personal conversation history, credentials, or private case details are inclu
 ## How to verify on your own device
 
 Use the successful GitHub Pages deployment URL. Install from the available Chrome menu on Android or Safari Share → Add to Home Screen on iPhone. Open online until offline-ready status appears, then try every tool in airplane mode with synthetic notes. Publisher books still require internet. For a waiting update, finish/export work, close all Sukoon tabs and reopen. See DEVICE_TESTS.md for exact evidence requirements.
+
+## v0.7.0 — optional cultural and environmental context
+
+The in-app consultation now offers 16 optional situations covering joint-family living, in-laws, marriage consent, reputation pressure, exams, remittances, diaspora belonging, colourism, elder care, financial control, workplace bias, heat/crowding, disasters, faith differences, fertility pressure and rural access. Each supplies four practical steps and an adaptable script, without assuming anyone’s identity. Universal guidance remains the default. All detailed additions are currently English and work offline after installation of the complete shell.
+
+Safety-sensitive contexts suppress joint mediation. No professional accuracy guarantee or independent-review claim is made. See [context scope and verification](docs/SOUTH_ASIAN_CONTEXTS.md). All existing tools remain available.

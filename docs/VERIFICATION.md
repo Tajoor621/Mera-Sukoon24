@@ -59,3 +59,7 @@ All 46 uploaded repository files matched local hashes after the code release. Th
 Code commit: `47db5cb4a46845a853a65fa6347757d0278f432f`. GitHub ran **63 tests: 63 passed, 0 failed**, and all JavaScript syntax checks passed. Candidate verification: https://github.com/Tajoor621/Mera-Sukoon24/actions/runs/39456672959 . The main-branch test and Pages package/deploy workflow also succeeded: https://github.com/Tajoor621/Mera-Sukoon24/actions/runs/39456773964 .
 
 This iteration used GitHub CI because no local execution environment was available. No new real-device or independent clinical review is claimed. The master prompt and runtime guidance retained their previous blob hashes. Publisher links are optional; the in-app guidance is original educational text, not rehosted books.
+
+## v0.7.0 context expansion — verification scope
+
+New tests exercise sixteen situations across thirteen domains and three response styles, while preserving all existing tests. Additional cases cover safety-sensitive contexts, urgent overrides, universal fallback, faith opt-in, module caching and real application handlers in the simulated DOM. GitHub CI is the execution environment for this iteration; final evidence will be recorded below after completion. Device, screen-reader, cultural, translation and clinical review remain pending.

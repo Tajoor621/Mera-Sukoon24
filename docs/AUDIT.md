@@ -80,3 +80,9 @@ The release addresses code-level parts of the improvement brief: progressive dis
 Evidence is separated from planned review: see ACCESSIBILITY.md, DEVICE_TESTS.md, INDEPENDENT_REVIEW.md and DEPLOYMENT.md. Translations remain AI-drafted and have not been independently reviewed. No clinician, community participant, phone or assistive-technology session was available. There are no fabricated passes, screenshots or review signatures. The core tests remain and the suite is extended; TEST_RESULTS.txt records the run.
 
 The previous provisional 7/10 code/content-readiness judgement is not upgraded to 10/10 or clinical approval. Version 0.5.0 remains pre-production because critical independent verification gates remain open.
+
+## v0.7.0 cultural and environmental guidance
+
+Added sixteen optional, situation-based contexts to the existing in-app consultation. Universal guidance remains the default; identity is never inferred. Domain explanations and all previous tools remain. Context-specific steps are capped at four. Forced marriage/dowry pressure, controlling threats and disaster contexts suppress automated joint mediation; urgent flags retain priority. Native labels, session-only choices and atomic offline inclusion are preserved.
+
+This is an engineering and content expansion, not evidence of effectiveness or professional validation. Detailed context text is English. Independent clinical/community/native-language reviews and real-device/assistive-technology tests remain open. See SOUTH_ASIAN_CONTEXTS.md and VERIFICATION.md for coverage and actual test evidence.
