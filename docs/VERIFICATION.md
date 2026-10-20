@@ -53,3 +53,9 @@ Final v0.5.0 local run: **52/52 tests passed**, all JavaScript syntax checks pas
 ## Final remote release verification
 
 All 46 uploaded repository files matched local hashes after the code release. The master prompt and runtime guidance retained their previous blob hashes. GitHub's check workflow and Pages test/package/deploy workflow both completed successfully for code commit `89f0d344e28b742e3affb1b54054d0b673b06d21`. Deployment evidence and URL are in DEPLOYMENT.md. Earlier notes that live publication was unverified describe the state before that successful workflow, not its final status. Real-device and independent-review gates remain pending.
+
+## v0.6.0 verified release — 20 October 2026
+
+Code commit: `47db5cb4a46845a853a65fa6347757d0278f432f`. GitHub ran **63 tests: 63 passed, 0 failed**, and all JavaScript syntax checks passed. Candidate verification: https://github.com/Tajoor621/Mera-Sukoon24/actions/runs/39456672959 . The main-branch test and Pages package/deploy workflow also succeeded: https://github.com/Tajoor621/Mera-Sukoon24/actions/runs/39456773964 .
+
+This iteration used GitHub CI because no local execution environment was available. No new real-device or independent clinical review is claimed. The master prompt and runtime guidance retained their previous blob hashes. Publisher links are optional; the in-app guidance is original educational text, not rehosted books.

@@ -40,3 +40,9 @@ These sources inform general educational/safety topics, not every custom script 
 New tests exercise all thirteen domains across three modes, danger/medical overrides, restricted mediation, faith opt-in, persistence flags, resource routing, malformed choices, no network/storage APIs and actual simulated UI response flows. Existing tests are retained, with SW version expectations advanced to this release.
 
 A local execution environment was unavailable for this iteration. Validation must be read from GitHub's test and deployment runs; do not substitute static syntax inspection for the test result. Real-device, assistive-technology, native-speaker and clinical reviews are still not completed.
+
+## v0.6.0 verified release — 20 October 2026
+
+Code commit: `47db5cb4a46845a853a65fa6347757d0278f432f`. GitHub ran **63 tests: 63 passed, 0 failed**, and all JavaScript syntax checks passed. Candidate verification: https://github.com/Tajoor621/Mera-Sukoon24/actions/runs/39456672959 . The main-branch test and Pages package/deploy workflow also succeeded: https://github.com/Tajoor621/Mera-Sukoon24/actions/runs/39456773964 .
+
+This iteration used GitHub CI because no local execution environment was available. No new real-device or independent clinical review is claimed. The master prompt and runtime guidance retained their previous blob hashes. Publisher links are optional; the in-app guidance is original educational text, not rehosted books.

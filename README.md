@@ -49,7 +49,7 @@ No runtime dependencies, subscriptions, keys, advertisements or paid APIs. No cl
 
 ## Audit and release status
 
-See [architecture and behavioural design audit](docs/AUDIT.md) for findings, evidence, ratings and remaining gaps. Version 0.5.0 passes 52 automated tests, including simulated DOM event tests. These are not real-browser, device, accessibility or clinical certification.
+See [architecture and behavioural design audit](docs/AUDIT.md) for findings, evidence, ratings and remaining gaps. Version 0.6.0 passes 63 automated tests, including simulated DOM event tests. These are not real-browser, device, accessibility or clinical certification.
 
 ## Run and check
 
