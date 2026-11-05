@@ -7,7 +7,10 @@
   "display": "standalone",
   "background_color": "#f6f5ef",
   "theme_color": "#164f46",
-  "description": "Free reading, calming tools and personal reflection.",
+  "lang": "en-GB",
+  "dir": "ltr",
+  "categories": ["lifestyle", "education"],
+  "description": "Free reading, small wellbeing steps and calming tools in English, Urdu and Roman Urdu.",
   "icons": [
     {
       "src": "icons/icon-192.png",

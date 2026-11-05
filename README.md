@@ -1,87 +1,87 @@
 # Mera-Sukoon24 — Sukoon
 
-A free, culturally aware self-help app for small practical steps, with a specification for a future AI companion.
+**Live app:** [tajoor621.github.io/Mera-Sukoon24](https://tajoor621.github.io/Mera-Sukoon24/)
 
-## Project status
+A free, quiet place for reading, small wellbeing steps and calming tools, in English, Urdu and Roman Urdu. Sukoon means a settled, peaceful pause. The app is a self-help companion. It is not a clinician, not a diagnosis, and not an emergency service.
 
-Version 0.7.0 adds a buildless browser wellbeing module to the companion specification. It includes a searchable free-resource catalogue, topic-based check-in, calming tools and optional local reflections. No AI backend, native Android app or clinical validation is included. GitHub Pages is the only deployment target; GitHub deployment has succeeded; real-device verification remains pending.
+Version 0.8.0 is a buildless browser app. There is no account, no paid API, no advertising and no AI chat. GitHub Pages is the only deployment target. Real-device and independent language review remain pending; nothing here is a clinical certification.
 
-## Complete guidance inside the app
+## What you can do
 
-- A dedicated thirteen-domain consultation screen provides complete starting explanations, four practical steps, adaptable scripts and reflection questions.
-- Advice and voluntary mediation outlines are displayed in-app; safety/coercion/minor flags restrict unsuitable joint discussions.
-- Check-in and planner results now include substantial built-in guidance.
-- Library cards open Sukoon guidance first. Publisher originals remain optional secondary links.
-- The original pre-written guidance is available offline after the initial successful visit, with no paid API, AI backend or server storage of choices.
+- **In-app consultation.** Thirteen support domains, with a complete starting explanation, practical steps, adaptable scripts and a reflection question. Optional life contexts cover joint-family living, marriage consent, exams, remittances, diaspora belonging, heat, disasters and other situations, without assuming anyone’s identity. Safety, coercion and minor flags keep unsuitable joint discussions off the page.
+- **A next step.** A short plan in English, Urdu or Roman Urdu. Faith-based comfort appears only when you ask for it. An urgent-safety choice replaces the plan with human-support guidance.
+- **Check-in.** A topic reflection for stress, worry, low mood, sleep, motivation, self-kindness or connection. It is not a screening test.
+- **Respect and dignity.** A structured reflection on body shaming, racism and colourism, from the person affected, a witness, or your own behaviour, including uncertainty and power imbalance.
+- **Reading shelf.** Search, topic and language filters, bookmarks, and Sukoon’s own guidance first. Publisher pages stay optional and are not stored offline.
+- **Calm.** A one-minute comfortable breathing timer, a sensory grounding sequence, and a three-minute reading pause. Stop any of them whenever you wish. Nothing is scored.
+- **Small activities.** Movement, connection, learning, kindness, notice and rest. No streaks, supplements or “dopamine” claims.
+- **Reflection.** An optional mood note and up to 90 entries. Notes stay hidden until you show them. You can delete one entry, export, or restore a validated JSON file.
+- **A line for today.** One original sentence in the interface language you choose. It changes with the local date and is not advice about your situation.
+- **Comfort.** Text size (comfortable, larger, largest) and appearance (match this device, paper, or dusk). These stay in this browser tab for the visit. They are not written into the journal.
+- **Support path.** If you are in immediate danger, the app asks you to seek local emergency help or someone trusted nearby. Sukoon cannot monitor you or contact services for you.
 
-Detailed new responses are English, not yet independently clinically reviewed, and cannot guarantee accuracy for every personal situation. [Scope, privacy and sources](docs/IN_APP_GUIDANCE.md).
+The supplied Mera-Sukoon24 artwork is the welcome image, favicon and home-screen icon. Its original lettering is unchanged. That lettering is branding; the app does not claim clinical credentials or guaranteed relief. Details are in [docs/BRANDING.md](docs/BRANDING.md).
 
-## Brand assets
+## Languages
 
-The owner-supplied Mera-Sukoon24 artwork is integrated into app-header and welcome-page branding, favicons, PWA icons, a maskable icon and the Apple home-screen icon. The unmodified source is retained at `branding/mera-sukoon24-original.png`. [Asset details](docs/BRANDING.md).
+The critical interface — navigation, hero, start paths, form labels, safety text, the daily line, the reading pause and result summaries — can be shown in English, Urdu or Roman Urdu. Detailed consultation, behaviour and reading texts remain English and are labelled as such. Translations are drafted and have not had an independent native-speaker review.
 
-## v0.5.0 improvements and release gates
+Urdu uses a right-to-left direction on the translated text and a Nastaliq-capable font stack when the device has one. The page does not flip the English guidance into a right-to-left layout.
 
-- Optional skippable tour, native collapsible secondary tools, open-all control and direct anchor navigation.
-- Critical navigation, form labels/options, safety messages and result summaries in English, Urdu and Roman Urdu; session-only language preference. Detailed content remains labelled as English.
-- Named result regions, short status announcements, visible focus, stronger control borders, forced-colour styling and reflow improvements.
-- Atomic shell update notices, cache-health checks, failed-install cleanup and readable incomplete-cache/startup recovery.
-- Test-gated GitHub Pages artifact packaging with no runtime dependencies.
+## Privacy
 
-**Pre-production:** physical device tests, TalkBack/VoiceOver tests, independent native-speaker/community review and qualified clinical review are pending. No screenshots, reviewer sign-offs, signed APK or WCAG certification are claimed. The thirteen-domain master prompt and runtime guidance are unchanged in this iteration. No AI chat backend was added.
-
-See [device evidence](docs/DEVICE_TESTS.md), [independent review handoff](docs/INDEPENDENT_REVIEW.md), [accessibility record](docs/ACCESSIBILITY.md) and [deployment](docs/DEPLOYMENT.md).
-
-## Free wellbeing tools
-
-- 15 curated entries from WHO, NHS, CCI, Mind and YoungMinds: books, workbooks, worksheets, guidance and available audio.
-- Urdu edition signpost for WHO's stress guide; next-step planner in English, Urdu script and Roman Urdu. Other tools remain English.
-- Search and topic/language filters, bookmarks and source attribution.
-- Body-shaming/racism reflection with affected-person, witness and own-behaviour perspectives; setting-specific guidance, safe boundary/apology scripts, safeguarding and up to four next steps. Reports use transparent rules, not AI or expert individual evaluation.
-- Optional check-in routes selected concerns to reading. It is not a validated screening instrument.
-- Three clear starting routes, compact expandable behavioural reports, uncertainty and power-imbalance inputs, and improved result focus.
-- Comfortable breathing timer, sensory grounding and small daily activities.
-- Optional mood/reflection history (latest 90 entries, paginated display), hidden-by-default reflection text, individual deletion, validated JSON restore and export.
-- Session-only data by default; saving to this browser requires explicit opt-in.
-- Offline app shell after a successful online visit and service-worker installation. External books and publisher pages are not cached.
-
-No runtime dependencies, subscriptions, keys, advertisements or paid APIs. No claim that the app measures or increases dopamine. The catalogue contains official free-access resources, not pirated commercial books and not every book available online.
-
-## Audit and release status
-
-See [architecture and behavioural design audit](docs/AUDIT.md) for findings, evidence, ratings and remaining gaps. Version 0.6.0 passes 63 automated tests, including simulated DOM event tests. These are not real-browser, device, accessibility or clinical certification.
+Saving is off until you opt in. With it off, bookmarks, activities and reflections live in the tab and disappear on reload. With it on, they stay in this browser only. Sukoon does not encrypt that storage. Consultation choices, plans and comfort settings are not part of the export. Publisher links leave this site and follow that publisher’s rules. The hosting provider still sees ordinary page requests.
 
 ## Run and check
 
-Serve this directory over localhost, for example:
+ES modules need a local server. Opening `index.html` as a file is unsupported.
 
 ```sh
 python3 -m http.server 8000
 ```
 
-Visit `http://localhost:8000`. ES modules require HTTP serving; opening `index.html` directly as a file is unsupported.
+Visit `http://localhost:8000`.
 
 ```sh
 npm test
 npm run check
+npm run package:site
 ```
 
-Node 22 or newer is recommended for checks; no installation step is required.
+Node 22 or newer is recommended. There is no install step and there are no runtime dependencies. `npm test` is an automated check of the tools, interface events, offline shell and comfort settings. It is not a browser, device, screen-reader or clinical certification.
 
-For free GitHub Pages hosting, the repository owner can select **Settings → Pages → GitHub Actions**. The release includes a test-gated Pages workflow. GitHub verified successful deployment of v0.5.0; see deployment evidence in `docs/DEPLOYMENT.md`. Select Actions as the Pages source to avoid the observed duplicate legacy branch pipeline. Actual device installation remains unverified. Service workers need HTTPS (or localhost). Device/browser installation support varies; no APK is produced.
+## GitHub Pages
 
-See [free resource policy and sources](docs/FREE_RESOURCES.md) and [verification notes](docs/VERIFICATION.md).
+In **Settings → Pages**, choose **GitHub Actions** as the source. The workflow runs the tests, packages an allowlist into `dist/` and deploys that directory. `dist/` is not committed. Notes, tests and credentials are not in the package.
 
-## Companion principles
+Service workers need HTTPS or localhost. After a successful online visit the app shell can open offline; publisher books still need the internet. To take an update, finish or export unsaved work, close every Sukoon tab and reopen. The app does not force an update while you are writing.
 
-- Mirror UK English, Pakistani Urdu, or Roman Urdu, including the user's script.
-- Offer religious comfort only when the user signals that it is welcome.
-- Give direct relationship assessments when asked, explicitly limited to what the user has shared.
-- Support South Asian communities globally, the UK diaspora, and a universal fallback.
-- Offer a small number of realistic next steps, with safety taking priority when needed.
-- Be transparent that Sukoon is an AI companion, not a clinician or emergency service.
+A project site’s `robots.txt` is published with the app. Crawlers that only read `https://tajoor621.github.io/robots.txt` will not see this file.
 
-## Thirteen support domains
+Earlier deployment evidence is in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Device checks you can run yourself are in [docs/DEVICE_TESTS.md](docs/DEVICE_TESTS.md).
+
+## What this version adds
+
+- A clearer reading layout, sticky section navigation on wider screens, a visible support link, and print styles for a plan or a page of guidance.
+- Session-only text size and a paper or dusk appearance, including a match-this-device setting. Dusk text, links, buttons, focus and field borders are checked against contrast thresholds.
+- A daily line and a three-minute reading pause, with the same stop-at-any-time pattern as the breathing timer.
+- Hero, start paths, consultation link and footer summary in all three interface languages.
+- Landmarks, a named navigation region, the current section on in-page links, and a footer outside the main content.
+- Canonical URL, social metadata, a sitemap and a robots file. The content security policy still blocks inline scripts and remote sources, so there is no inline structured-data script.
+
+## What Sukoon will not do
+
+- It will not diagnose, treat, or tell you that you are safe.
+- It will not pretend to be an emergency service, a helpline, or a clinician.
+- It will not offer joint mediation when control, retaliation, a minor, or immediate danger makes that unsuitable.
+- It will not store your words on a Sukoon server. There is no server for that.
+- It will not claim that a breathing timer, a book or a small plan will fix a crisis.
+
+If distress continues, gets worse, or gets in the way of daily life, a qualified mental health professional is the right next person. Self-help can sit beside that support. It does not replace it.
+
+## Companion specification
+
+The repository also holds the brief for a future AI companion. The running app does not include that companion.
 
 | Module | Domain |
 | --- | --- |
@@ -99,27 +99,30 @@ See [free resource policy and sources](docs/FREE_RESOURCES.md) and [verification
 | L | Body shaming, racism and behavioural reflection |
 | M | Spiritual crisis |
 
-## Repository contents
+- [Master prompt](prompts/SUKOON_MASTER_PROMPT.md)
+- [Runtime guidance](docs/RUNTIME_GUIDANCE.md) — apply this before the brief. Do not ship the prompt alone as a clinical service.
+- [Implementation handoff](docs/IMPLEMENTATION_HANDOFF.md)
+- [In-app guidance scope](docs/IN_APP_GUIDANCE.md)
+- [Optional contexts](docs/SOUTH_ASIAN_CONTEXTS.md)
+- [Free resources and their limits](docs/FREE_RESOURCES.md)
+- [Accessibility record](docs/ACCESSIBILITY.md)
+- [Architecture audit](docs/AUDIT.md)
+- [Verification notes](docs/VERIFICATION.md)
 
-- [Current master prompt](prompts/SUKOON_MASTER_PROMPT.md): the product and conversation brief, including the updated module L.
-- [Runtime guidance](docs/RUNTIME_GUIDANCE.md): how to apply the brief without false clinical claims, privacy promises, or unverified crisis contacts.
-- [Implementation handoff](docs/IMPLEMENTATION_HANDOFF.md): integration steps, review scenarios, and the boundary between exported specifications and future implementation.
+The prompt asks for verified, location-aware crisis resources instead of hardcoded numbers. This app does not look up local services and does not dispatch help.
 
-## Using the specification
+No personal conversation history, credentials or private case details are in the repository.
 
-Read the original prompt together with the runtime guidance. For a future AI integration, apply the runtime guidance as governing constraints before the companion brief; do not ship the original prompt on its own as a clinical service.
+## Repository map
 
-The current prompt requires verified, location-aware crisis resources instead of hardcoded contact numbers. No resource lookup or emergency-dispatch integration exists in the browser tools.
+| Path | Role |
+| --- | --- |
+| `index.html`, `styles.css`, `manifest.webmanifest` | The Pages app, its appearance and install metadata |
+| `app.mjs` and the neighbouring modules | Tools, language, navigation, plans, consultations and comfort |
+| `sw.js` | Versioned offline shell. It does not update itself mid-session |
+| `tests/` | Automated checks |
+| `docs/` | Scope, review limits and earlier release records |
+| `branding/`, `icons/` | Owner-supplied artwork and the icons made from it |
+| `prompts/` | Future companion brief |
 
-No personal conversation history, credentials, or private case details are included.
-
-
-## How to verify on your own device
-
-Use the successful GitHub Pages deployment URL. Install from the available Chrome menu on Android or Safari Share → Add to Home Screen on iPhone. Open online until offline-ready status appears, then try every tool in airplane mode with synthetic notes. Publisher books still require internet. For a waiting update, finish/export work, close all Sukoon tabs and reopen. See DEVICE_TESTS.md for exact evidence requirements.
-
-## v0.7.0 — optional cultural and environmental context
-
-The in-app consultation now offers 16 optional situations covering joint-family living, in-laws, marriage consent, reputation pressure, exams, remittances, diaspora belonging, colourism, elder care, financial control, workplace bias, heat/crowding, disasters, faith differences, fertility pressure and rural access. Each supplies four practical steps and an adaptable script, without assuming anyone’s identity. Universal guidance remains the default. All detailed additions are currently English and work offline after installation of the complete shell.
-
-Safety-sensitive contexts suppress joint mediation. No professional accuracy guarantee or independent-review claim is made. See [context scope and verification](docs/SOUTH_ASIAN_CONTEXTS.md). All existing tools remain available.
+Earlier release notes in `docs/` describe the versions they were written for. They are records, not a claim that this version has passed a new clinical or device review.

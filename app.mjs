@@ -7,6 +7,7 @@ import {resources,activities} from './resources.mjs';
 import {filterResources,suggest,emptyState,writeState,STORAGE_KEY,localDay} from './core.mjs';
 import {openSession,removeSaved,parseBackup} from './session.mjs';
 import {makePlan,plannerTopics} from './planner.mjs';
+import {readComfort,saveComfort,quietLine} from './comfort.mjs';
 const $=id=>document.getElementById(id);
 const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
 let storage=null;try{storage=window.localStorage;}catch{/* Session mode remains available. */}
@@ -22,7 +23,9 @@ function focusResult(id,language=uiLanguage){
 }
 function setInterfaceLanguage(value){
  uiLanguage=languageCode(value);saveLanguage(preferenceStorage,uiLanguage);$('ui-language').value=uiLanguage;applyLanguage(document,uiLanguage);applySelectLanguage(document,uiLanguage);
- $('plan-language').value=uiLanguage;renderPlanOptions();navigation.refreshTour();
+ $('plan-language').value=uiLanguage;renderPlanOptions();renderQuietLine();
+ if(pauseTimer){const status=$('pause-status');status.textContent=text('pause-running',uiLanguage);annotate(status,uiLanguage);}else stopPause();
+ navigation.refreshTour();
 }
 $('ui-language').onchange=()=>setInterfaceLanguage($('ui-language').value);
 
@@ -133,6 +136,31 @@ $('breath-start').onclick=()=>{
  breathTimer=setInterval(()=>{const left=Math.max(0,Math.ceil((deadline-Date.now())/1000));if(!left)stopBreath('Your minute is complete. Notice how you feel; no particular result is required.');else $('breath-count').textContent=left+' seconds remaining';},1000);
 };
 $('breath-stop').onclick=()=>stopBreath();
+let pauseTimer=null,pauseDeadline=0;
+function stopPause(message=text('pause-ready',uiLanguage)){
+ clearInterval(pauseTimer);pauseTimer=null;$('pause-start').disabled=false;$('pause-stop').disabled=true;const status=$('pause-status');status.textContent=message;annotate(status,uiLanguage);$('pause-count').textContent='';
+}
+function paintChrome(){
+ if(typeof document.querySelectorAll!=='function'||typeof window.matchMedia!=='function')return;
+ const dark=comfort.theme==='dusk'||(comfort.theme==='device'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+ for(const meta of document.querySelectorAll('meta[name="theme-color"]'))meta.setAttribute('content',dark?'#10211e':'#164f46');
+}
+let comfort=readComfort(preferenceStorage);
+function applyComfort(){
+ const root=document.documentElement;if(root?.dataset){root.dataset.text=comfort.text;root.dataset.theme=comfort.theme;}
+ $('text-size').value=comfort.text;$('theme').value=comfort.theme;paintChrome();
+}
+function updateComfort(partial){comfort=saveComfort(preferenceStorage,{...comfort,...partial});applyComfort();}
+$('text-size').onchange=()=>updateComfort({text:$('text-size').value});
+$('theme').onchange=()=>updateComfort({theme:$('theme').value});
+applyComfort();
+if(typeof window.matchMedia==='function'){const scheme=window.matchMedia('(prefers-color-scheme: dark)');scheme.addEventListener?.('change',()=>{if(comfort.theme==='device')paintChrome();});}
+function renderQuietLine(){const node=$('quiet-text');node.textContent=quietLine(uiLanguage,localDay());annotate(node,uiLanguage);}
+$('pause-start').onclick=()=>{
+ clearInterval(pauseTimer);pauseDeadline=Date.now()+180000;$('pause-start').disabled=true;$('pause-stop').disabled=false;const status=$('pause-status');status.textContent=text('pause-running',uiLanguage);annotate(status,uiLanguage);$('pause-count').textContent='3:00';
+ pauseTimer=setInterval(()=>{const left=Math.max(0,Math.ceil((pauseDeadline-Date.now())/1000));if(!left)stopPause(text('pause-done',uiLanguage));else $('pause-count').textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');},1000);
+};
+$('pause-stop').onclick=()=>stopPause();
 const ground=['Notice five things you can see.','Notice four things you can feel safely, such as the chair supporting you.','Notice three sounds around you.','Notice two scents, or two colours if scents are not comfortable.','Notice one taste already present, or one detail you appreciate.','Take a moment to notice the room. You can finish here.'];let groundIndex=0;
 function renderGround(){$('ground-step').textContent=ground[groundIndex];$('ground-next').disabled=groundIndex===ground.length-1;}
 $('ground-next').onclick=()=>{groundIndex=Math.min(ground.length-1,groundIndex+1);renderGround();};$('ground-reset').onclick=()=>{groundIndex=0;renderGround();};
@@ -178,7 +206,7 @@ $('restore-file').onchange=async()=>{
  finally{$('restore-file').value='';}
 };
 function clearVisible(){
- $('consult-form').reset();$('behaviour-form').reset();$('plan-form').reset();$('check-form').reset();$('suggestions').replaceChildren();$('note').value='';$('mood').value='';$('mood').setCustomValidity('');$('show-notes').checked=false;$('saved-only').checked=false;$('journal-status').textContent='';historyLimit=7;groundIndex=0;renderGround();stopBreath();
+ $('consult-form').reset();$('behaviour-form').reset();$('plan-form').reset();$('check-form').reset();$('suggestions').replaceChildren();$('note').value='';$('mood').value='';$('mood').setCustomValidity('');$('show-notes').checked=false;$('saved-only').checked=false;$('journal-status').textContent='';historyLimit=7;groundIndex=0;renderGround();stopBreath();stopPause();
 }
 function renderState(){renderResources();renderHistory();renderActivities();updateBookmarks();}
 $('erase').onclick=()=>{
@@ -192,7 +220,7 @@ window.addEventListener('storage',event=>{
  else if(remember){const incoming=openSession(storage);state=incoming.state;remember=incoming.remember;$('remember').checked=remember;renderState();$('storage-status').textContent='Saved records changed in another tab and have been refreshed.';}
 });
 const network=()=>{$('offline-status').textContent=navigator.onLine?'':'You appear to be offline. Publisher links need internet access.';};window.addEventListener('online',network);window.addEventListener('offline',network);
-function resume(){if(!document.hidden)renderActivities();else if(breathTimer)stopBreath('Paused while the app was away.');}
+function resume(){if(!document.hidden)renderActivities();else{if(breathTimer)stopBreath('Paused while the app was away.');if(pauseTimer)stopPause(text('pause-away',uiLanguage));}}
 window.addEventListener('focus',resume);document.addEventListener('visibilitychange',resume);
 renderState();setInterfaceLanguage(uiLanguage);network();
 $('storage-status').textContent=initial.status==='saved'?'Saved records loaded from this browser.':initial.status==='unreadable'||initial.status==='unavailable'?'Saved data could not be read. Session mode is active; existing stored data has not been overwritten.':'Session only. Nothing is saved for the next visit.';
@@ -203,13 +231,13 @@ $('check-update').onclick=async()=>{
  catch{$('update-status').textContent='Could not check for updates. Your current session is still available.';}
 };
 if('serviceWorker'in navigator){
- navigator.serviceWorker.addEventListener('controllerchange',()=>navigator.serviceWorker.controller?.postMessage({type:'CHECK_CACHE'}));
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swRegistration){$('update-status').textContent=swRegistration.waiting?text('update-waiting',uiLanguage):'';}navigator.serviceWorker.controller?.postMessage({type:'CHECK_CACHE'});});
  navigator.serviceWorker.addEventListener('message',event=>{
   if(event.data?.type==='CACHE_STATUS')$('offline-status').textContent=text(event.data.ready?'cache-ready':'cache-incomplete',uiLanguage);
  });
  navigator.serviceWorker.register('./sw.js').then(registration=>{
   swRegistration=registration;
-  const notify=()=>{if(registration.waiting)$('update-status').textContent=text('update-waiting',uiLanguage);};
+  const notify=()=>{$('update-status').textContent=registration.waiting?text('update-waiting',uiLanguage):'';};
   notify();registration.addEventListener('updatefound',()=>{const worker=registration.installing;worker?.addEventListener('statechange',notify);});
   navigator.serviceWorker.ready.then(()=>navigator.serviceWorker.controller?.postMessage({type:'CHECK_CACHE'})).catch(()=>{});
  }).catch(()=>{$('offline-status').textContent='Offline caching is unavailable. The tools still work while this page stays open.';});

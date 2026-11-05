@@ -1,5 +1,5 @@
 // Simulated DOM event tests. These exercise application code, not browser layout.
-import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {STORAGE_KEY} from '../core.mjs';
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {STORAGE_KEY,localDay} from '../core.mjs';import {quietLine} from '../comfort.mjs';import {text} from '../i18n.mjs';
 let generation=0;
 async function boot(seed=null,{denyRemove=false,serviceWorker=null}={}){
  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),ids=new Map(),events=new Map(),store=new Map(seed===null?[]:[[STORAGE_KEY,seed]]);let focused='';
@@ -59,6 +59,22 @@ test('unsafe cultural context prevents mediation in the rendered app response',a
  assert.doesNotMatch(e.ids.get('consult-result').textContent,/A voluntary discussion structure/);
 });
 
+test('comfort choices, the daily line and a reading pause stay out of saved records',async()=>{
+ const e=await boot();const day=localDay();
+ assert.equal(e.ids.get('quiet-text').textContent,quietLine('en',day));
+ e.ids.get('ui-language').value='ur';e.ids.get('ui-language').onchange();
+ assert.equal(e.ids.get('quiet-text').textContent,quietLine('ur',day));
+ assert.equal(e.ids.get('quiet-text').dir,'rtl');
+ assert.equal(e.ids.get('hero-title').lang,'ur');
+ e.ids.get('theme').value='dusk';e.ids.get('theme').onchange();
+ e.ids.get('text-size').value='larger';e.ids.get('text-size').onchange();
+ assert.equal(e.ids.get('theme').value,'dusk');assert.equal(e.ids.get('text-size').value,'larger');
+ assert.equal(e.store.has(STORAGE_KEY),false);assert.equal(e.ids.get('remember').checked,false);
+ e.ids.get('pause-start').click();
+ try{assert.equal(e.ids.get('pause-start').disabled,true);assert.equal(e.ids.get('pause-status').textContent,text('pause-running','ur'));assert.equal(e.store.has(STORAGE_KEY),false);}
+ finally{e.ids.get('pause-stop').click();}
+ assert.equal(e.ids.get('pause-start').disabled,false);
+});
 test('library guidance returns the optional context to universal instead of showing stale context',async()=>{
  const e=await boot();e.ids.get('consult-context').value='joint-family';
  const button=e.all().find(n=>n.tagName==='button'&&n.textContent==='Read guidance in Sukoon');button.click();

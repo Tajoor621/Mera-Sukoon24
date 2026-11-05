@@ -1,6 +1,8 @@
 // AI-drafted interface translations, pending independent language review.
 const strings={
  'skip-link':['Skip to content','Matn par jayen','مواد پر جائیں'],
+ 'nav-label':['On this page','Is safhe par','اس صفحے پر'],
+ 'nav-consult':['In-app consultation','App ke andar mashwara','ایپ کے اندر مشورہ'],
  'nav-plan':['My next step','Mera agla qadam','میرا اگلا قدم'],
  'nav-read':['Read','Parhain','مطالعہ'],
  'nav-behaviour':['Respect & dignity','Izzat aur waqar','عزت اور وقار'],
@@ -31,6 +33,10 @@ const strings={
  'support-heading':['You deserve human support, too.','Aap insani madad ke bhi haqdar hain.','آپ انسانی مدد کے بھی حق دار ہیں۔'],
  'safety-message':['If you are in immediate danger, seek local emergency help now or ask a trusted person nearby to help you reach it. This app cannot monitor your safety or contact services for you. Use a safer device if someone is monitoring yours.','Agar foran khatra hai to maqami emergency madad lain ya qareeb kisi bharosaymand shakhs se rabta karain. Yeh app aap ki nigrani ya aap ke liye madad se rabta nahi kar sakti. Agar koi aap ka device dekh raha hai to zyada mehfooz device istemal karain.','اگر فوری خطرہ ہے تو مقامی ہنگامی مدد لیں یا قریب کسی قابل اعتماد شخص سے رابطہ کریں۔ یہ ایپ آپ کی نگرانی یا آپ کے لیے مدد سے رابطہ نہیں کر سکتی۔ اگر کوئی آپ کے آلے کی نگرانی کر رہا ہے تو زیادہ محفوظ آلہ استعمال کریں۔'],
  'followup-message':['If distress persists, worsens or interferes with daily life, speak with a qualified mental health professional. Self-help can complement that support.','Agar takleef barqarar rahe, barhe ya rozmarrah zindagi ko mutasir kare to mustanad zehni sehat ke mahir se rabta karain. Khud madad is saharay ke saath ho sakti hai.','اگر تکلیف برقرار رہے، بڑھے یا روزمرہ زندگی کو متاثر کرے تو مستند ذہنی صحت کے ماہر سے رابطہ کریں۔ اپنی مدد اس سہارے کے ساتھ ہو سکتی ہے۔'],
+ 'preferences-label':['Language and comfort','Zaban aur asani','زبان اور آسانی'],
+ 'text-size-label':['Text size','Matn ka size','متن کا سائز'],
+ 'theme-label':['Page appearance','Safhe ki surat','صفحے کی صورت'],
+ 'comfort-note':['Text size and appearance stay on this device for this visit only. They are not saved with reflections.','Matn ka size aur safhe ki surat sirf is visit ke liye is device par rehte hain. Yeh jaizon ke saath save nahi hotay.','متن کا سائز اور صفحے کی صورت صرف اس دورے کے لیے اس آلے پر رہتے ہیں۔ یہ جائزوں کے ساتھ محفوظ نہیں ہوتے۔'],
  'expand-label':['Keep all tools open','Tamam tools khulay rakhain','تمام اوزار کھلے رکھیں'],
  'tour-start':['Show a short tour','Chhota taaruf dikhayen','مختصر تعارف دکھائیں'],
  'tour-heading':['A gentle introduction','Aik narm taaruf','ایک نرم تعارف'],
@@ -53,10 +59,34 @@ const strings={
  'toggle-behaviour':['Behavioural reflection questions','Rawaiye ke jaizay ke sawalat','رویے کے جائزے کے سوالات'],
  'toggle-library':['Reading shelf and filters','Parhai aur filters','مطالعہ اور فلٹر'],
  'toggle-steps':['Small activities','Chhoti sargarmiyan','چھوٹی سرگرمیاں'],
- 'toggle-reflect':['Journal and reflection history','Diary aur pichlay jaizay','ڈائری اور پچھلے جائزے']
+ 'toggle-reflect':['Journal and reflection history','Diary aur pichlay jaizay','ڈائری اور پچھلے جائزے'],
+ 'hero-eyebrow':['A small step, at your own pace','Aik chhota qadam, apni raftaar se','ایک چھوٹا قدم، اپنی رفتار سے'],
+ 'hero-title':['A little room to breathe.','Saans lene ki aik chhoti jagah.','سانس لینے کی ایک چھوٹی جگہ۔'],
+ 'hero-lede':['Free reading and gentle tools for a more manageable day. Start wherever you are.','Muft parhai aur narm tools, taake din zyada qabil-e-bardasht ho. Jahan hain wahin se shuru karain.','مفت مطالعہ اور نرم اوزار، تاکہ دن زیادہ قابلِ برداشت ہو۔ جہاں ہیں وہیں سے شروع کریں۔'],
+ 'hero-guidance':['Get guidance here','Yahin rehnumai lain','یہیں رہنمائی لیں'],
+ 'hero-shelf':['Explore the reading shelf','Parhai ka shelf dekhein','مطالعے کی شیلف دیکھیں'],
+ 'hero-assurance':['No account. No paid API. No ads.','Na account, na paid API, na ads.','نہ اکاؤنٹ، نہ ادائیگی والی API، نہ اشتہار۔'],
+ 'path-pause-title':['I need a pause','Mujhe waqfa chahiye','مجھے وقفہ چاہیے'],
+ 'path-pause-text':['Go straight to a calming tool.','Seedha sukoon ke tool par jayen.','سیدھا سکون کے اوزار پر جائیں۔'],
+ 'path-plan-title':['I need a next step','Mujhe agla qadam chahiye','مجھے اگلا قدم چاہیے'],
+ 'path-plan-text':['A short plan in English, Urdu or Roman Urdu.','English, Urdu ya Roman Urdu mein chhota plan.','انگریزی، اردو یا رومن اردو میں چھوٹا منصوبہ۔'],
+ 'path-behaviour-title':['I need to understand behaviour','Rawaiya samajhna hai','رویہ سمجھنا ہے'],
+ 'path-behaviour-text':['Body shaming, racism and safe choices.','Jism ki tazleel, nasli imtiaz aur mehfooz faislay.','جسم کی تذلیل، نسلی امتیاز اور محفوظ فیصلے۔'],
+ 'path-read-title':['I want something to read','Kuch parhna chahta ya chahti hoon','کچھ پڑھنا چاہتا یا چاہتی ہوں'],
+ 'path-read-text':['Open the shelf of free guidance.','Muft rehnumai ki shelf kholain.','مفت رہنمائی کی شیلف کھولیں۔'],
+ 'quiet-kicker':['A line for today','Aaj ki ek line','آج کی ایک سطر'],
+ 'pause-heading':['A short reading pause','Parhai ka chhota waqfa','پڑھائی کا مختصر وقفہ'],
+ 'pause-intro':['Stay with a page or the quiet around you. When the time ends, look up if you want to. Stop whenever you wish. Nothing is scored.','Aik safhe ya aas paas ke sukoon ke saath rahiye. Waqt khatam ho to chahein to nazar uthayen. Jab chahein ruk jayen. Koi score nahi.','ایک صفحے یا آس پاس کے سکون کے ساتھ رہیے۔ وقت ختم ہو تو چاہیں تو نظر اٹھائیں۔ جب چاہیں رک جائیں۔ کوئی اسکور نہیں۔'],
+ 'pause-start':['Start a 3-minute pause','3 minute ka waqfa shuru karain','۳ منٹ کا وقفہ شروع کریں'],
+ 'pause-stop':['Stop pause','Waqfa rokein','وقفہ روکیں'],
+ 'pause-ready':['Ready when you want a short pause.','Jab chahein chhota waqfa shuru ho sakta hai.','جب چاہیں مختصر وقفہ شروع ہو سکتا ہے۔'],
+ 'pause-running':['The pause is going. Stop whenever you wish.','Waqfa jari hai. Jab chahein rok dein.','وقفہ جاری ہے۔ جب چاہیں روک دیں۔'],
+ 'pause-done':['The pause has ended. You can look up or keep reading. No particular result is required.','Waqfa khatam hua. Nazar utha saktay hain ya parhte rahiye. Koi khaas nateeja zaroori nahi.','وقفہ ختم ہوا۔ نظر اٹھا سکتے ہیں یا پڑھتے رہیے۔ کوئی خاص نتیجہ ضروری نہیں۔'],
+ 'pause-away':['Paused while the app was away.','App door thi to waqfa ruk gaya.','ایپ دور تھی تو وقفہ رک گیا۔'],
+ 'footer-summary':['Sukoon · free reading and calming tools','Sukoon · muft parhai aur sukoon ke tools','سکون · مفت مطالعہ اور سکون کے اوزار']
 };
 export const languages=['en','roman','ur'];
-export const interfaceIds=Object.keys(strings).filter(k=>!['tour1','tour2','tour3','check-normal','check-followup','result-ready','result-label','report-summary','update-waiting','cache-ready','cache-incomplete'].includes(k));
+export const interfaceIds=Object.keys(strings).filter(k=>!['tour1','tour2','tour3','check-normal','check-followup','result-ready','result-label','report-summary','update-waiting','cache-ready','cache-incomplete','pause-ready','pause-running','pause-done','pause-away'].includes(k));
 export function languageCode(value){return languages.includes(value)?value:'en';}
 export function text(key,language='en'){const index=languages.indexOf(languageCode(language));return Object.hasOwn(strings,key)?strings[key][index]:'';}
 export function readLanguage(storage){try{return languageCode(storage?.getItem('sukoon-language-v1'));}catch{return 'en';}}
@@ -69,6 +99,8 @@ const selectCopies={
  'behaviour-topic':{body:['Body shaming or appearance-based humiliation','Jism ya zahiri shakal par tazleel','جسم یا ظاہری شکل پر تذلیل'],racism:['Racism or colourism','Nasli ya rang ki bunyad par imtiaz','نسلی یا رنگ کی بنیاد پر امتیاز'],both:['Both / overlapping experiences','Dono / miltay jultay tajurbe','دونوں / ملتے جلتے تجربے']},
  'behaviour-certainty':{reported:['I am reporting comments or treatment I consider harmful','Main nuqsan deh samjhi jane wali baat ya rawaiya bata raha/rahi hoon','میں نقصان دہ سمجھی جانے والی بات یا رویہ بتا رہا/رہی ہوں'],unsure:['I am unsure and want help thinking it through','Mujhay yaqeen nahi aur samajhne mein madad chahiye','مجھے یقین نہیں اور سمجھنے میں مدد چاہیے']},
  'behaviour-role':{affected:['This happened to me','Yeh meray saath hua','یہ میرے ساتھ ہوا'],witness:['I witnessed it / want to support someone','Main ne dekha / kisi ki madad karna chahta/chahti hoon','میں نے دیکھا / کسی کی مدد کرنا چاہتا/چاہتی ہوں'],own:['I want to reflect on my own behaviour','Main apne rawaiye par ghour karna chahta/chahti hoon','میں اپنے رویے پر غور کرنا چاہتا/چاہتی ہوں']},
- 'behaviour-setting':{family:['Family or relationship','Khandan ya rishta','خاندان یا رشتہ'],work:['Workplace','Kaam ki jagah','کام کی جگہ'],school:['School or college','School ya college','اسکول یا کالج'],online:['Online','Online','آن لائن'],public:['Public or another setting','Awami ya doosri jagah','عوامی یا دوسری جگہ']}
+ 'behaviour-setting':{family:['Family or relationship','Khandan ya rishta','خاندان یا رشتہ'],work:['Workplace','Kaam ki jagah','کام کی جگہ'],school:['School or college','School ya college','اسکول یا کالج'],online:['Online','Online','آن لائن'],public:['Public or another setting','Awami ya doosri jagah','عوامی یا دوسری جگہ']},
+ 'text-size':{comfortable:['Comfortable','Aaram deh','آرام دہ'],large:['Larger','Bara','بڑا'],larger:['Largest','Sab se bara','سب سے بڑا']},
+ theme:{device:['Match this device','Device ke mutabiq','آلے کے مطابق'],paper:['Paper','Kaghaz','کاغذ'],dusk:['Dusk','Shaam','شام']}
 };
 export function applySelectLanguage(document,language){const index=languages.indexOf(languageCode(language));for(const [id,labels] of Object.entries(selectCopies)){const select=document.getElementById(id);if(!select?.options)continue;for(const option of select.options)if(labels[option.value])option.textContent=labels[option.value][index];annotate(select,language);}}
