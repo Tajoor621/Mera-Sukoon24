@@ -7,3 +7,15 @@ test('invalid domain, mode and prototype-like topic values fall back safely',()=
 test('resource guidance selects relevant in-app topic without opening a URL',()=>{assert.equal(domainForResource({tags:['racism']}),'dignity');assert.equal(domainForResource({tags:['connection']}),'social');assert.equal(domainForResource({tags:['sleep']}),'emotions');assert.equal(domainForResource({tags:null}),'emotions');});
 test('sleep and other concerns add topic-specific explanation without diagnosis',()=>{const r=consultation({topic:'sleep'});assert.ok(r.sections.some(s=>s.paragraphs.some(p=>p.includes('sleeping medication'))));assert.match(r.scope,/Not AI chat/);});
 test('consultation logic is local, has no persistence API and is included in offline shell',()=>{const source=readFileSync(new URL('../consultations.mjs',import.meta.url),'utf8');assert.doesNotMatch(source,/\bfetch\s*\(|localStorage|sessionStorage|XMLHttpRequest/);const sw=readFileSync(new URL('../sw.js',import.meta.url),'utf8');assert.match(sw,/\.\/consultations\.mjs/);});
+
+test('private safety flags replace generic confrontation advice and keep cultural context',()=>{
+ for(const flag of ['coercion','minor'])for(const mode of ['advice','both']){
+  const r=consultation({domain:'money',context:'joint-family',mode,[flag]:true});
+  assert.ok(r.sections.some(s=>s.heading==='Words for a trusted supporter'));
+  assert.ok(r.sections.some(s=>s.heading.startsWith('Your selected context:')));
+  assert.doesNotMatch(JSON.stringify(r),/Have one factual household discussion|Words you can adapt|Words for this situation|A voluntary discussion structure/);
+ }
+ const r=consultation({domain:'relationships',context:'marriage-choice',mode:'both'});
+ assert.doesNotMatch(JSON.stringify(r),/Words you can adapt|A voluntary discussion structure/);
+ assert.match(r.actions.join(' '),/forced-marriage support/);
+});

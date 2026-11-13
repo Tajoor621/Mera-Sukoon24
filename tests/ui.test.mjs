@@ -30,7 +30,7 @@ test('UI starts in session mode and unreadable state is never silently overwritt
 test('journal opt-in, hidden notes, restore and individual deletion use real event handlers',async()=>{const e=await boot();e.ids.get('mood').value='7';e.ids.get('note').value='sensitive note';e.submit('journal');assert.equal(e.store.has(STORAGE_KEY),false);assert.doesNotMatch(e.ids.get('history').textContent,/sensitive note/);e.ids.get('remember').checked=true;e.ids.get('remember').onchange();assert.equal(JSON.parse(e.store.get(STORAGE_KEY)).entries.length,1);e.ids.get('show-notes').checked=true;e.ids.get('show-notes').onchange();assert.match(e.ids.get('history').textContent,/sensitive note/);const backup=e.store.get(STORAGE_KEY);e.all().find(n=>n.tagName==='button'&&n.textContent==='Delete this reflection').click();assert.equal(JSON.parse(e.store.get(STORAGE_KEY)).entries.length,0);e.ids.get('restore-file').files=[{size:backup.length,text:async()=>backup}];await e.ids.get('restore-file').onchange();assert.equal(JSON.parse(e.store.get(STORAGE_KEY)).entries.length,1);});
 test('bookmark state synchronises cards in both recommendation and library areas',async()=>{const e=await boot();e.submit('check-form');let buttons=e.all().filter(n=>n.dataset.bookmark==='who-stress');assert.ok(buttons.length>=2);buttons[0].click();buttons=e.all().filter(n=>n.dataset.bookmark==='who-stress');assert.ok(buttons.every(n=>n.attributes['aria-pressed']==='true'));});
 test('failed deletion keeps saving toggle truthful',async()=>{const saved=JSON.stringify({version:1,saved:[],entries:[],done:[]});const e=await boot(saved,{denyRemove:true});e.ids.get('remember').checked=false;e.ids.get('remember').onchange();assert.equal(e.ids.get('remember').checked,true);assert.match(e.ids.get('storage-status').textContent,/Saving remains enabled/);});
-test('planner generates Urdu RTL and safety text without faith unless opted in',async()=>{const e=await boot();e.ids.get('plan-language').value='ur';e.ids.get('plan-language').onchange();e.submit('plan-form');assert.equal(e.ids.get('plan-result').dir,'rtl');assert.equal(e.focused(),'plan-result');e.ids.get('plan-unsafe').checked=true;e.submit('plan-form');assert.match(e.ids.get('plan-result').textContent,/فوری خطرہ/);});
+test('planner generates Urdu RTL and safety text without faith unless opted in',async()=>{const e=await boot();e.ids.get('plan-language').value='ur';e.ids.get('plan-language').onchange();e.submit('plan-form');assert.equal(e.ids.get('plan-result').dir,'rtl');assert.equal(e.focused(),'plan-result');e.ids.get('plan-unsafe').checked=true;e.submit('plan-form');assert.match(e.ids.get('plan-result').textContent,/فوری خطرہ/);assert.equal(e.focused(),'support');assert.equal(e.ids.get('support').attributes['aria-label'],undefined);});
 test('behavioural report handles uncertainty and focuses result; urgent focuses support',async()=>{const e=await boot();e.ids.get('behaviour-certainty').value='unsure';e.submit('behaviour-form');assert.match(e.ids.get('behaviour-report').textContent,/cannot determine/);assert.equal(e.focused(),'behaviour-report');e.ids.get('behaviour-unsafe').checked=true;e.submit('behaviour-form');assert.equal(e.focused(),'support');});
 test('cross-tab clear removes visible sensitive content and stops remembering',async()=>{const e=await boot();e.ids.get('mood').value='4';e.ids.get('note').value='private';e.submit('journal');e.events.get('storage')({key:STORAGE_KEY,newValue:null});assert.equal(e.ids.get('history').children.length,0);assert.equal(e.ids.get('remember').checked,false);assert.match(e.ids.get('storage-status').textContent,/another tab/);await new Promise(resolve=>setTimeout(resolve,5));});
 
@@ -80,4 +80,31 @@ test('library guidance returns the optional context to universal instead of show
  const button=e.all().find(n=>n.tagName==='button'&&n.textContent==='Read guidance in Sukoon');button.click();
  assert.equal(e.ids.get('consult-context').value,'');
  assert.doesNotMatch(e.ids.get('consult-result').textContent,/Your selected context:/);
+});
+
+test('a reading pre-fills a fresh consultation and keeps its topic on resubmit',async()=>{
+ const e=await boot();
+ e.ids.get('consult-domain').value='relationships';
+ e.ids.get('consult-mode').value='both';
+ e.ids.get('consult-coercion').checked=true;
+ e.ids.get('consult-medical').checked=true;
+ e.all().find(n=>n.tagName==='button'&&n.textContent==='Read guidance in Sukoon').click();
+ assert.equal(e.ids.get('consult-domain').value,'emotions');
+ assert.equal(e.ids.get('consult-mode').value,'advice');
+ assert.equal(e.ids.get('consult-coercion').checked,false);
+ assert.equal(e.ids.get('consult-medical').checked,false);
+ assert.match(e.ids.get('consult-result').textContent,/If several demands feel urgent/);
+ e.submit('consult-form');
+ assert.match(e.ids.get('consult-result').textContent,/If several demands feel urgent/);
+});
+test('an in-progress restore cannot repopulate notes after the user clears them',async()=>{
+ const e=await boot();
+ let finishRead;
+ e.ids.get('restore-file').files=[{size:100,text:()=>new Promise(resolve=>{finishRead=resolve;})}];
+ const pending=e.ids.get('restore-file').onchange();
+ e.ids.get('erase').click();
+ finishRead(JSON.stringify({version:1,saved:[],done:[],entries:[{at:new Date().toISOString(),mood:3,note:'private'}]}));
+ await pending;
+ assert.equal(e.ids.get('history').children.length,0);
+ assert.equal(e.store.has(STORAGE_KEY),false);
 });

@@ -5,7 +5,7 @@ import {configureNavigation} from './navigation.mjs';
 import {behaviourReport} from './behaviour.mjs';
 import {resources,activities} from './resources.mjs';
 import {filterResources,suggest,emptyState,writeState,STORAGE_KEY,localDay} from './core.mjs';
-import {openSession,removeSaved,parseBackup} from './session.mjs';
+import {openSession,removeSaved,parseBackup,backupLimit} from './session.mjs';
 import {makePlan,plannerTopics} from './planner.mjs';
 import {readComfort,saveComfort,quietLine} from './comfort.mjs';
 const $=id=>document.getElementById(id);
@@ -13,13 +13,13 @@ const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefine
 let storage=null;try{storage=window.localStorage;}catch{/* Session mode remains available. */}
 const initial=openSession(storage);
 let {remember,state}=initial;
-let historyLimit=7;
+let historyLimit=7, restoreAttempt=0;
 let preferenceStorage=null;try{preferenceStorage=window.sessionStorage;}catch{}
 let uiLanguage=readLanguage(preferenceStorage);
 const navigation=configureNavigation(document,window,()=>uiLanguage);
 function focusResult(id,language=uiLanguage){
- const node=$(id);node.setAttribute('aria-label',text('result-label',language));annotate(node,language);navigation.reveal(id);
- $('result-status').textContent='';queueMicrotask(()=>{$('result-status').textContent=text('result-ready',language);annotate($('result-status'),language);});
+ const node=$(id);if(id!=='support'){node.setAttribute('aria-label',text('result-label',language));annotate(node,language);}navigation.reveal(id);
+ $('result-status').textContent='';queueMicrotask(()=>{$('result-status').textContent=text(id==='support'?'support-ready':'result-ready',language);annotate($('result-status'),language);});
 }
 function setInterfaceLanguage(value){
  uiLanguage=languageCode(value);saveLanguage(preferenceStorage,uiLanguage);$('ui-language').value=uiLanguage;applyLanguage(document,uiLanguage);applySelectLanguage(document,uiLanguage);
@@ -49,24 +49,25 @@ function renderConsultation(result){
  if(result.question)article.append(el('h4','A question to reflect on'),el('p',result.question));
  article.append(el('p',result.scope,'muted'));return article;
 }
+let consultationTopic='';
 function openConsultation(domain,topic=''){
+ $('consult-form').reset();
  $('consult-domain').value=domain;
- $('consult-context').value='';
- const result=consultation({domain,topic,mode:'advice'});
- $('consult-result').replaceChildren(renderConsultation(result));
- focusResult('consult-result');
+ consultationTopic=topic;
+ showConsultation();
 }
 for(const context of contexts)$('consult-context').append(new Option(context.title,context.id));
 for(const domain of domains)$('consult-domain').append(new Option(domain.title,domain.id));
-$('consult-form').onsubmit=event=>{
- event.preventDefault();
- const result=consultation({domain:$('consult-domain').value,mode:$('consult-mode').value,context:$('consult-context').value,ongoing:$('consult-ongoing').checked,coercion:$('consult-coercion').checked,minor:$('consult-minor').checked,unsafe:$('consult-unsafe').checked,medical:$('consult-medical').checked,faith:$('consult-faith').checked});
+function showConsultation(){
+ const result=consultation({domain:$('consult-domain').value,topic:consultationTopic,mode:$('consult-mode').value,context:$('consult-context').value,ongoing:$('consult-ongoing').checked,coercion:$('consult-coercion').checked,minor:$('consult-minor').checked,unsafe:$('consult-unsafe').checked,medical:$('consult-medical').checked,faith:$('consult-faith').checked});
  $('consult-result').replaceChildren(renderConsultation(result));focusResult(result.urgent?'support':'consult-result');
-};
-$('consult-form').onreset=()=>$('consult-result').replaceChildren();
+}
+$('consult-form').onsubmit=event=>{event.preventDefault();showConsultation();};
+$('consult-domain').onchange=()=>{consultationTopic='';};
+$('consult-form').onreset=()=>{consultationTopic='';$('consult-result').replaceChildren();};
 function internalReading(r){
  const button=el('button','Read guidance in Sukoon','secondary');
- button.onclick=()=>openConsultation(domainForResource(r),r.tags.find(t=>['sleep','worry','low mood','motivation','self-kindness','connection'].includes(t))||'');
+ button.onclick=()=>openConsultation(domainForResource(r),r.tags.find(t=>['sleep','worry','low mood','motivation','self-kindness','connection','stress'].includes(t))||'');
  return button;
 }
 function optionalPublisher(r){
@@ -91,7 +92,7 @@ $('check-form').onsubmit=e=>{
  e.preventDefault();
  const result=suggest({concern:$('concern').value,ongoing:$('ongoing').checked,interfering:$('interfering').checked,unsafe:$('unsafe').checked});
  const message=uiLanguage==='en'?result.message:text(result.urgent?'safety-message':$('ongoing').checked||$('interfering').checked?'check-followup':'check-normal',uiLanguage);const intro=el('p',message);annotate(intro,uiLanguage);const nodes=[intro];
- if(result.urgent){const a=el('a','Go to human support');a.href='#support';nodes.push(a);}
+ if(result.urgent){const a=el('a',text('go-support',uiLanguage));annotate(a,uiLanguage);a.href='#support';nodes.push(a);}
  else {nodes.push(renderConsultation(consultation({domain:$('concern').value==='connection'?'social':'emotions',topic:$('concern').value,ongoing:$('ongoing').checked||$('interfering').checked})));const grid=el('div',undefined,'grid');grid.append(...result.ids.map(id=>card(resources.find(r=>r.id===id))));nodes.push(grid);}
  $('suggestions').replaceChildren(...nodes);focusResult(result.urgent?'support':'suggestions');
 };
@@ -124,7 +125,7 @@ $('plan-form').onsubmit=e=>{
  const target=$('plan-result');target.lang=result.lang==='roman'?'ur-Latn':result.lang==='ur'?'ur':'en-GB';target.dir=result.dir;
  const panel=el('article',undefined,'panel');panel.append(el('h3',result.title),el('p',result.intro));
  if(result.actions.length){panel.append(el('h4',result.heading));const list=el('ol');list.append(...result.actions.map(a=>el('li',a)));panel.append(list,el('p',result.followup),el('p',result.question));}
- panel.append(el('p',result.limit,'muted'));if(!result.urgent)panel.append(renderConsultation(consultation({domain:$('plan-topic').value==='connection'?'social':'emotions',topic:({'mood':'low mood','kindness':'self-kindness','stress':'worry'})[$('plan-topic').value]||$('plan-topic').value,faith:$('plan-faith').checked})));if(result.sources.length)panel.append(sourceList(result.sources));target.replaceChildren(panel);focusResult('plan-result',result.lang);
+ panel.append(el('p',result.limit,'muted'));if(!result.urgent)panel.append(renderConsultation(consultation({domain:$('plan-topic').value==='connection'?'social':'emotions',topic:({'mood':'low mood','kindness':'self-kindness','stress':'stress'})[$('plan-topic').value]||$('plan-topic').value,faith:$('plan-faith').checked})));if(result.sources.length)panel.append(sourceList(result.sources));if(result.urgent){const a=el('a',text('go-support',result.lang));a.href='#support';panel.append(a);}target.replaceChildren(panel);if(result.urgent)focusResult('support');else focusResult('plan-result',result.lang);
 };
 $('plan-form').onreset=()=>{ $('plan-result').replaceChildren();setTimeout(()=>{$('plan-language').value=uiLanguage;renderPlanOptions();},0); };
 let breathTimer=null,deadline=0;
@@ -168,7 +169,14 @@ function renderActivities(){
  const today=localDay();$('activities').replaceChildren(...activities.map(a=>{
   const n=el('article',undefined,'panel card'),key=today+':'+a.id,complete=state.done.includes(key);
   const b=el('button',complete?'Done for today ✓':'Mark done','secondary');b.setAttribute('aria-pressed',String(complete));
-  b.onclick=()=>{state.done=complete?state.done.filter(x=>x!==key):[...state.done,key].slice(-540);persist();renderActivities();};
+  b.onclick=()=>{
+   if(today!==localDay()){renderActivities();return;}
+   const wasDone=state.done.includes(key);
+   state.done=wasDone?state.done.filter(x=>x!==key):[...state.done,key].slice(-540);
+   b.textContent=wasDone?'Mark done':'Done for today ✓';
+   b.setAttribute('aria-pressed',String(!wasDone));
+   persist();
+  };
   n.append(el('h3',a.label),el('p',a.text),internalReading(resources.find(r=>r.id===a.source)),b);return n;
  }));
 }
@@ -197,15 +205,18 @@ $('export').onclick=()=>{
 $('restore').onclick=()=>$('restore-file').click();
 $('restore-file').onchange=async()=>{
  const file=$('restore-file').files[0];if(!file)return;
+ const attempt=++restoreAttempt;$('restore-file').value='';
  try{
-  if(file.size>600000)throw Error('Choose an export smaller than 600 KB.');
-  const incoming=parseBackup(await file.text());
+  if(file.size>backupLimit)throw Error('Choose a Sukoon JSON export up to 2 MB.');
+  const content=await file.text();
+  if(attempt!==restoreAttempt)return;
+  const incoming=parseBackup(content);
   if(!confirm('Replace current bookmarks, activity records and reflections with '+incoming.entries.length+' reflections from this export? Export current data first if needed.'))return;
   state=incoming;historyLimit=7;renderResources();renderActivities();renderHistory();updateBookmarks();persist();$('journal-status').textContent='Export restored. Local saving preference was not changed.';
- }catch(error){$('storage-status').textContent=error.message;}
- finally{$('restore-file').value='';}
+ }catch(error){if(attempt===restoreAttempt)$('storage-status').textContent=error.message;}
 };
 function clearVisible(){
+ restoreAttempt++;$('restore-file').value='';
  $('consult-form').reset();$('behaviour-form').reset();$('plan-form').reset();$('check-form').reset();$('suggestions').replaceChildren();$('note').value='';$('mood').value='';$('mood').setCustomValidity('');$('show-notes').checked=false;$('saved-only').checked=false;$('journal-status').textContent='';historyLimit=7;groundIndex=0;renderGround();stopBreath();stopPause();
 }
 function renderState(){renderResources();renderHistory();renderActivities();updateBookmarks();}
@@ -220,8 +231,11 @@ window.addEventListener('storage',event=>{
  else if(remember){const incoming=openSession(storage);state=incoming.state;remember=incoming.remember;$('remember').checked=remember;renderState();$('storage-status').textContent='Saved records changed in another tab and have been refreshed.';}
 });
 const network=()=>{$('offline-status').textContent=navigator.onLine?'':'You appear to be offline. Publisher links need internet access.';};window.addEventListener('online',network);window.addEventListener('offline',network);
-function resume(){if(!document.hidden)renderActivities();else{if(breathTimer)stopBreath('Paused while the app was away.');if(pauseTimer)stopPause(text('pause-away',uiLanguage));}}
+let displayedDay=localDay();
+function refreshDay(){const today=localDay();if(displayedDay===today)return;displayedDay=today;renderQuietLine();renderActivities();}
+function resume(){if(!document.hidden)refreshDay();else{if(breathTimer)stopBreath('Paused while the app was away.');if(pauseTimer)stopPause(text('pause-away',uiLanguage));}}
 window.addEventListener('focus',resume);document.addEventListener('visibilitychange',resume);
+if(typeof window.setInterval==='function')window.setInterval(()=>{if(!document.hidden)refreshDay();},30000);
 renderState();setInterfaceLanguage(uiLanguage);network();
 $('storage-status').textContent=initial.status==='saved'?'Saved records loaded from this browser.':initial.status==='unreadable'||initial.status==='unavailable'?'Saved data could not be read. Session mode is active; existing stored data has not been overwritten.':'Session only. Nothing is saved for the next visit.';
 let swRegistration=null;

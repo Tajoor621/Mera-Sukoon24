@@ -4,8 +4,9 @@ export function openSession(storage){
  catch{return {remember:false,state:emptyState(),status:'unavailable'};}
 }
 export function removeSaved(storage){try{storage?.removeItem(STORAGE_KEY);return true;}catch{return false;}}
+export const backupLimit=2000000;
 export function parseBackup(text){
- if(typeof text!=='string'||text.length>600000)throw Error('Choose a Sukoon JSON export smaller than 600 KB.');
+ if(typeof text!=='string'||text.length>backupLimit)throw Error('Choose a Sukoon JSON export up to 2 MB.');
  let raw;try{raw=JSON.parse(text);}catch{throw Error('This file is not valid JSON. Nothing was changed.');}
  if(!raw||raw.version!==1||!Array.isArray(raw.entries)||!Array.isArray(raw.saved)||!Array.isArray(raw.done))throw Error('This is not a supported Sukoon export. Nothing was changed.');
  const result=cleanState(raw);

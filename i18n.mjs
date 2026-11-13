@@ -49,6 +49,8 @@ const strings={
  'check-normal':['Choose one small step that feels manageable. These suggestions reflect your selected topic; they are not a diagnosis or a clinical assessment.','Aik aasan qadam chunain. Yeh tajaveez aap ke chunay mauzu par hain; tashkhees ya tibbi jaiza nahi.','ایک آسان قدم چنیں۔ یہ تجاویز آپ کے منتخب موضوع پر ہیں؛ تشخیص یا طبی جائزہ نہیں۔'],
  'check-followup':['Because this is continuing or affecting daily life, consider speaking with a qualified professional. These readings can support that conversation.','Mushkil jari hai ya rozmarrah zindagi ko mutasir kar rahi hai, is liye mustanad mahir se baat karne par ghour karain. Yeh parhai us baat mein madad de sakti hai.','مشکل جاری ہے یا روزمرہ زندگی کو متاثر کر رہی ہے، اس لیے مستند ماہر سے بات کرنے پر غور کریں۔ یہ مطالعہ اس گفتگو میں مدد دے سکتا ہے۔'],
  'result-ready':['Your result is ready. Focus moved to the result.','Aap ka nateeja tayyar hai. Tawajjo nateejay par hai.','آپ کا نتیجہ تیار ہے۔ توجہ نتیجے پر ہے۔'],
+ 'support-ready':['Focus moved to immediate support.','Tawajjo fori madad par hai.','توجہ فوری مدد پر ہے۔'],
+ 'go-support':['Go to immediate support','Fori madad par jayen','فوری مدد پر جائیں'],
  'result-label':['Your support result','Aap ki rehnumai ka nateeja','آپ کی رہنمائی کا نتیجہ'],
  'report-summary':['This pre-written educational response uses your selections. It is not a diagnosis or legal verdict. Detailed guidance follows in English.','Yeh pehle se likhi taleemi rehnumai aap ke intikhab par hai. Yeh tashkhees ya qanooni faisla nahi. Tafseel English mein neeche hai.','یہ پہلے سے لکھی تعلیمی رہنمائی آپ کے انتخاب پر ہے۔ یہ تشخیص یا قانونی فیصلہ نہیں۔ تفصیل نیچے انگریزی میں ہے۔'],
  'update-waiting':['A new version is ready. Finish or export unsaved reflections, then close all Sukoon tabs and reopen to update.','Naya version tayyar hai. Ghair mehfooz jaizay mukammal ya export karain, phir tamam Sukoon tabs band kar ke dobara kholain.','نیا نسخہ تیار ہے۔ غیر محفوظ شدہ جائزے مکمل یا برآمد کریں، پھر تمام سکون ٹیب بند کر کے دوبارہ کھولیں۔'],
@@ -86,7 +88,7 @@ const strings={
  'footer-summary':['Sukoon · free reading and calming tools','Sukoon · muft parhai aur sukoon ke tools','سکون · مفت مطالعہ اور سکون کے اوزار']
 };
 export const languages=['en','roman','ur'];
-export const interfaceIds=Object.keys(strings).filter(k=>!['tour1','tour2','tour3','check-normal','check-followup','result-ready','result-label','report-summary','update-waiting','cache-ready','cache-incomplete','pause-ready','pause-running','pause-done','pause-away'].includes(k));
+export const interfaceIds=Object.keys(strings).filter(k=>!['tour1','tour2','tour3','check-normal','check-followup','result-ready','support-ready','go-support','result-label','report-summary','update-waiting','cache-ready','cache-incomplete','pause-ready','pause-running','pause-done','pause-away'].includes(k));
 export function languageCode(value){return languages.includes(value)?value:'en';}
 export function text(key,language='en'){const index=languages.indexOf(languageCode(language));return Object.hasOwn(strings,key)?strings[key][index]:'';}
 export function readLanguage(storage){try{return languageCode(storage?.getItem('sukoon-language-v1'));}catch{return 'en';}}

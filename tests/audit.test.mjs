@@ -6,7 +6,17 @@ test('safety overrides planner topic and faith in every language',()=>{for(const
 test('planner invalid input falls back without prototype-property lookups',()=>{for(const topic of ['toString','__proto__','bad']){const p=makePlan({topic,language:'toString'});assert.equal(p.lang,'en');assert.deepEqual(p.actions,makePlan().actions);}});
 test('opening unreadable storage does not write or grant saving consent',()=>{let wrote=false;const s={getItem(){return '{bad';},setItem(){wrote=true;}};assert.equal(openSession(s).remember,false);assert.equal(wrote,false);assert.equal(openSession({getItem(){return '{"version":5}';}}).remember,false);assert.equal(openSession(null).remember,false);});
 test('valid saved consent restores state; removal failures are explicit',()=>{const state=emptyState();state.saved=['who-stress'];const s={getItem(){return JSON.stringify(state);}};assert.equal(openSession(s).remember,true);assert.deepEqual(openSession(s).state,state);assert.equal(removeSaved({removeItem(){throw Error('denied');}}),false);assert.equal(removeSaved({removeItem(key){assert.equal(key,STORAGE_KEY);}}),true);});
-test('backups validate structure, limits and entries before replacing anything',()=>{const state=emptyState();state.entries=[{at:'2026-10-17T12:00:00Z',mood:5,note:'hello'}];assert.deepEqual(parseBackup(JSON.stringify(state)),state);for(const invalid of ['{bad','{}',JSON.stringify({...state,version:2}),JSON.stringify({...state,entries:[{mood:999}]}),JSON.stringify({...state,saved:['unknown']}),'x'.repeat(600001)])assert.throws(()=>parseBackup(invalid));});
+test('backups validate structure, limits and entries before replacing anything',()=>{const state=emptyState();state.entries=[{at:'2026-10-17T12:00:00Z',mood:5,note:'hello'}];assert.deepEqual(parseBackup(JSON.stringify(state)),state);for(const invalid of ['{bad','{}',JSON.stringify({...state,version:2}),JSON.stringify({...state,entries:[{mood:999}]}),JSON.stringify({...state,saved:['unknown']}),'x'.repeat(2000001)])assert.throws(()=>parseBackup(invalid));});
 test('uncertainty and power imbalance are acknowledged without declaring a finding',()=>{const r=behaviourReport({certainty:'unsure',power:true,topic:'racism'});assert.match(r.summary,/cannot determine/);assert.ok(r.sections.some(s=>s.heading==='When challenging someone could carry a cost'));assert.ok(r.sections.find(s=>s.heading==='When challenging someone could carry a cost').text.includes('instead of confrontation'));});
 test('cache release does not update individual modules from live network',()=>{const sw=readFileSync(new URL('../sw.js',import.meta.url),'utf8');assert.doesNotMatch(sw,/fetch\(event\.request\)/);assert.doesNotMatch(sw,/self\.skipWaiting\(/);assert.match(sw,/cache\.match/);});
 test('install manifest includes Android and Apple raster sizes',()=>{const m=JSON.parse(readFileSync(new URL('../manifest.webmanifest',import.meta.url),'utf8'));for(const size of ['192x192','512x512'])assert.ok(m.icons.some(i=>i.sizes===size&&i.type==='image/png'));const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');assert.match(html,/apple-touch-icon/);assert.match(html,/breath-count" aria-live="off/);});
+
+test('a full export containing Unicode and JSON-escaped notes can be restored',()=>{
+ const state=emptyState();
+ state.entries=Array.from({length:90},(_,i)=>({
+  at:new Date(Date.UTC(2026,9,17,0,i)).toISOString(),mood:5,note:'اردو'+String.fromCharCode(1).repeat(1996)
+ }));
+ const backup=JSON.stringify(state,null,2);
+ assert.ok(Buffer.byteLength(backup)>600000);
+ assert.deepEqual(parseBackup(backup),state);
+});
