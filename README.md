@@ -4,7 +4,7 @@
 
 A free, quiet place for reading, small wellbeing steps and calming tools, in English, Urdu and Roman Urdu. Sukoon means a settled, peaceful pause. The app is a self-help companion. It is not a clinician, not a diagnosis, and not an emergency service.
 
-Version 0.8.1 is a buildless browser app. There is no account, no paid API, no advertising and no AI chat. GitHub Pages is the only deployment target. Real-device and independent language review remain pending; nothing here is a clinical certification.
+Version 0.8.2 is a buildless browser app. There is no account, no paid API, no advertising and no AI chat. GitHub Pages is the only deployment target. Real-device and independent language review remain pending; nothing here is a clinical certification.
 
 ## What you can do
 
@@ -60,7 +60,7 @@ A project site’s `robots.txt` is published with the app. Crawlers that only re
 
 Earlier deployment evidence is in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). Device checks you can run yourself are in [docs/DEVICE_TESTS.md](docs/DEVICE_TESTS.md).
 
-## Functionality fixes in 0.8.1
+## Functionality fixes in 0.8.2
 
 - The Pages package includes the service worker so the app can open offline after a successful cache install.
 - Reading shortcuts start a fresh consultation with the selected reading topic. Safety-sensitive responses route users to human support or private next steps.
